@@ -1,12 +1,7 @@
-from typing import Any, Generic, List, Optional, Type, TypeVar, Union
-from pydantic import BaseModel
+from typing import Any, Generic, List, Optional, Type, Union
 from sqlalchemy.orm import Session
 
-from src.db.config import Base
-
-ModelType = TypeVar("ModelType", bound=Base)
-CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
-UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
+from src.utils.types import CreateSchemaType, ModelType, UpdateSchemaType
 
 
 class BaseDAL(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
