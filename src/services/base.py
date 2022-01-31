@@ -1,13 +1,10 @@
-from typing import Generic, Type, TypeVar
+from typing import Generic, Type
 from fastapi import status
 from sqlalchemy.orm import Session
 
-from src.dals.base import BaseDAL, CreateSchemaType, UpdateSchemaType, ModelType
 from src.utils.app_exceptions import AppException
 from src.utils.service_result import ServiceResult
-
-
-ModelDAL = TypeVar("ModelDAL", bound=BaseDAL)
+from src.utils.types import ModelDAL, CreateSchemaType, UpdateSchemaType, ModelType
 
 
 class BaseService(Generic[ModelDAL, CreateSchemaType, UpdateSchemaType]):
