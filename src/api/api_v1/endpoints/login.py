@@ -5,11 +5,11 @@ from sqlalchemy.orm import Session
 
 
 from src.api.deps import get_db
-from src.schemas import Token
-from src.services.users import user_service
 from src.core.config import settings
+from src.schemas import Token
+from src.services import user_service
 from src.utils.security import create_access_token
-from src.utils.service_result import ServiceResult
+from src.utils.service_result import ServiceResult, handle_result
 from src.utils.app_exceptions import AppException
 
 
@@ -24,9 +24,11 @@ def login_for_access_token(
         db, email=form_data.username, password=form_data.password
     )
     if not user:
-        return ServiceResult(AppException.BadRequest("Incorrect username or password"))
-    elif user.is_active:
-        return ServiceResult(AppException.BadRequest("User is inactive"))
+        return handle_result(
+            ServiceResult(AppException.BadRequest("Incorrect username or password"))
+        )
+    elif not user.is_active:
+        return handle_result(ServiceResult(AppException.BadRequest("User is inactive")))
 
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(user.email, access_token_expires)

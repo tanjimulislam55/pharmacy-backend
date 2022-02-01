@@ -14,7 +14,6 @@ class AppExceptionCase(Exception):
 
 
 async def app_exception_handler(request: Request, exception: AppExceptionCase):
-    print(exception)
     return JSONResponse(
         status_code=exception.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={

@@ -2,8 +2,8 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from .base import BaseDAL
-from models import Customer
-from schemas import CustomerCreate, CustomerUpdate
+from src.models import Customer
+from src.schemas import CustomerCreate, CustomerUpdate
 
 
 class CustomerDAL(BaseDAL[Customer, CustomerCreate, CustomerUpdate]):

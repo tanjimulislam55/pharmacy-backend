@@ -1,18 +1,38 @@
-from typing import Any, Generic, List, Optional, Type, Union
+from typing import Any, Generic, List, Optional, Type, Union, TypeVar
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from src.db.config import Base
 
-from src.utils.types import CreateSchemaType, ModelType, UpdateSchemaType
+
+ModelType = TypeVar("ModelType", bound=Base)
+CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
+UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class BaseDAL(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
+    def just_commit_and_return_db_obj(
+        self, db: Session, db_obj: ModelType
+    ) -> ModelType:
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
     def create_with_commit(self, db: Session, obj_in: CreateSchemaType) -> ModelType:
         db_obj = self.model(**obj_in.dict())
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+        return db_obj
+
+    def create_without_commit_but_flush(
+        self, db: Session, obj_in: CreateSchemaType
+    ) -> ModelType:
+        db_obj = self.model(**obj_in.dict())
+        db.add(db_obj)
+        db.flush()
         return db_obj
 
     def read_one_filtered_by_id(self, db: Session, id: int) -> Optional[ModelType]:
@@ -32,13 +52,13 @@ class BaseDAL(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.query(self.model).filter(self.model.id == id).update(
             obj_in.dict(exclude_unset=True), synchronize_session=False
         )
-        return self.read_one_by_id(db, id)
+        db.commit()
+        return self.read_one_filtered_by_id(db, id)
 
     def delete_one_filtered_by_id(
         self, db: Session, id: int
     ) -> Optional[Union[ModelType, Any]]:
-        return (
-            db.query(self.model)
-            .filter(self.model.id == id)
-            .delete(synchronize_session=False)
+        db.query(self.model).filter(self.model.id == id).delete(
+            synchronize_session=False
         )
+        db.commit()

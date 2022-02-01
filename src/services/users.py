@@ -3,12 +3,12 @@ from typing import Optional
 from fastapi import status
 
 from .base import BaseService
+from src.dals import UserDAL
 from src.models import User
-from src.dals.users import UserDAL
+from src.schemas import UserCreate, UserUpdate, UserInDB
 from src.utils.security import get_password_hash, verify_password
 from src.utils.service_result import ServiceResult
 from src.utils.app_exceptions import AppException
-from src.schemas.users import UserCreate, UserUpdate, UserInDB
 
 
 class UserService(BaseService[UserDAL, UserCreate, UserUpdate]):

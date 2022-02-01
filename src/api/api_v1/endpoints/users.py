@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 
 from src.api.deps import get_current_active_user, get_db
 from src.schemas import UserCreate, UserOut
-from src.services.users import user_service
-from src.utils.service_result import handle_result
 from src.models import User
+from src.services import user_service
+from src.utils.service_result import handle_result
 
 router = APIRouter()
 

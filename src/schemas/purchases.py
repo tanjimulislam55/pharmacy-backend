@@ -34,3 +34,10 @@ class PurchaseOrderOut(PurchaseOrderCreate):
 
     class Config:
         orm_mode = True
+
+
+class PurchaseOrderUpdate(BaseModel):
+    total_amount: Optional[float]
+    paid_amount: Optional[float]
+    due_amount: Optional[float]
+    note: Optional[str]

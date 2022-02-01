@@ -1,8 +1,8 @@
-"""first migration: Jan 29
+"""first commit on Feb 01
 
-Revision ID: b13bea4ef044
+Revision ID: 5bbe36046528
 Revises: 
-Create Date: 2022-01-29 23:28:43.400270
+Create Date: 2022-02-01 11:16:35.136053
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "b13bea4ef044"
+revision = "5bbe36046528"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -99,7 +99,6 @@ def upgrade():
     sa.Column('comment', sa.Text(), nullable=True),
     sa.Column('discount', sa.Integer(), nullable=True),
     sa.Column('vat', sa.Integer(), nullable=True),
-    sa.Column('profit_on_transaction', sa.Float(), nullable=True),
     sa.Column('customer_id', sa.Integer(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], ),
@@ -114,6 +113,7 @@ def upgrade():
     sa.Column('generic_name', sa.String(length=255), nullable=True),
     sa.Column('dosage_form', sa.String(length=255), nullable=True),
     sa.Column('strength', sa.String(length=255), nullable=True),
+    sa.Column('unit_price', sa.Float(), nullable=True),
     sa.Column('manufacturer_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['manufacturer_id'], ['manufacturers.id'], ),
     sa.PrimaryKeyConstraint('id')

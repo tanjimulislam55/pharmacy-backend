@@ -95,6 +95,7 @@ class Medicine(BaseModel):
     generic_name = Column(String(255), nullable=True, index=True)
     dosage_form = Column(String(255), nullable=True)
     strength = Column(String(255), nullable=True)
+    unit_price = Column(Float, nullable=True)
     manufacturer_id = Column(Integer, ForeignKey("manufacturers.id"))
 
     manufacturer = relationship("Manufacturer", uselist=False, back_populates="medicine") # noqa E501
@@ -123,10 +124,10 @@ class InvoiceOrder(BaseModel):
     comment = Column(Text, nullable=True)
     discount = Column(Integer, nullable=True, default=0)
     vat = Column(Integer, nullable=True, default=0)
-    profit_on_transaction = Column(Float, default=0)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"))
 
+    invoice_lines = relationship("InvoiceOrderLine", back_populates="invoice")
     user = relationship("User", back_populates="invoices")
     customer = relationship("Customer", back_populates="invoices")
 
@@ -140,6 +141,7 @@ class InvoiceOrderLine(BaseModel):
     invoice_id = Column(Integer, ForeignKey("invoice_orders.id"))
     medicine_id = Column(Integer, ForeignKey("medicines.id"))
 
+    invoice = relationship("InvoiceOrder", back_populates="invoice_lines")
     medicine = relationship("Medicine", back_populates="invoice_lines")
 
 
@@ -152,6 +154,7 @@ class PurchaseOrder(BaseModel):
     note = Column(Text, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"))
 
+    purchase_lines = relationship("PurchaseOrderLine", back_populates="purchase")
     user = relationship("User", back_populates="purchases")
 
 
@@ -166,4 +169,5 @@ class PurchaseOrderLine(BaseModel):
     purchase_id = Column(Integer, ForeignKey("purchase_orders.id"))
     medicine_id = Column(Integer, ForeignKey("medicines.id"))
 
+    purchase = relationship("PurchaseOrder", back_populates="purchase_lines")
     medicine = relationship("Medicine", back_populates="purchase_lines")

@@ -1,10 +1,18 @@
-from typing import Generic, Type
+from typing import Generic, Type, TypeVar
 from fastapi import status
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from src.db.config import Base
+from src.dals.base import BaseDAL
 from src.utils.app_exceptions import AppException
 from src.utils.service_result import ServiceResult
-from src.utils.types import ModelDAL, CreateSchemaType, UpdateSchemaType, ModelType
+
+
+ModelType = TypeVar("ModelType", bound=Base)
+CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
+UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
+ModelDAL = TypeVar("ModelDAL", bound=BaseDAL)
 
 
 class BaseService(Generic[ModelDAL, CreateSchemaType, UpdateSchemaType]):
@@ -36,15 +44,13 @@ class BaseService(Generic[ModelDAL, CreateSchemaType, UpdateSchemaType]):
             )
         return ServiceResult(data, status_code=status.HTTP_200_OK)
 
-    def update_by_id(self, db: Session, obj_in: UpdateSchemaType):
+    def update_by_id(self, db: Session, id: int, obj_in: UpdateSchemaType):
         data = self.dal(self.model).update_one_filtered_by_id(db, id, obj_in)
         if not data:
             return ServiceResult(AppException.NotAccepted())
         return ServiceResult(data, status_code=status.HTTP_202_ACCEPTED)
 
     def remove_by_id(self, db: Session, id: int):
-        ServiceResult(
-            "Successfully deleted", status_code=status.HTTP_202_ACCEPTED
-        ) if self.dal(self.model).delete_one_filtered_by_id(db, id) else ServiceResult(
-            AppException.NotFound(f"Nothing matched with id: {id}")
-        )
+        ServiceResult("Deleted", status_code=status.HTTP_202_ACCEPTED) if self.dal(
+            self.model
+        ).delete_one_filtered_by_id(db, id) else ServiceResult(AppException.Forbidden())

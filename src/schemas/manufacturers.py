@@ -18,3 +18,14 @@ class ManufacturerOut(ManufacturerCreate):
 
     class Config:
         orm_mode = True
+
+
+class ManufacturerUpdate(BaseModel):
+    name: Optional[str]
+    total_brands: Optional[int]
+    total_generics: Optional[int]
+    headquarter: Optional[str]
+    contact_list: Optional[List[str]]
+    established_in: Optional[str]
+    market_share: Optional[str]
+    growth: Optional[str]

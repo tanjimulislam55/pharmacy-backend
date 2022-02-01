@@ -15,3 +15,9 @@ class StockOut(StockCreate):
 
     class Config:
         orm_mode = True
+
+
+class StockUpdate(BaseModel):
+    in_stock: Optional[int]
+    last_transacted_date: Optional[datetime]
+    last_transacted_quantity: Optional[int]

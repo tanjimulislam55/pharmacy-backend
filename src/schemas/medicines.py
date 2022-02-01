@@ -7,6 +7,7 @@ class MedicineCreate(BaseModel):
     generic_name: Optional[str]
     dosage_form: Optional[str]
     strength: Optional[str]
+    unit_price: Optional[float]
     manufacturer_id: int
 
 
@@ -15,3 +16,11 @@ class MedicineOut(MedicineCreate):
 
     class Config:
         orm_mode = True
+
+
+class MedicineUpdate(BaseModel):
+    brand_name: Optional[str]
+    generic_name: Optional[str]
+    dosage_form: Optional[str]
+    strength: Optional[str]
+    unit_price: Optional[float]
