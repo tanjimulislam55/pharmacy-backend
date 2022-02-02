@@ -24,7 +24,6 @@ class InvoiceOrderCreate(BaseModel):
     comment: Optional[str]
     discount: Optional[int]
     vat: Optional[int]
-    profit_on_transaction: float = 0
     customer_id: Optional[int]
     user_id: int
 
@@ -35,3 +34,12 @@ class InvoiceOrderOut(InvoiceOrderCreate):
 
     class Config:
         orm_mode = True
+
+
+class InvoiceOrderUpdate(BaseModel):
+    total_amount: Optional[float]
+    paid_amount: Optional[float]
+    due_amount: Optional[float]
+    comment: Optional[str]
+    discount: Optional[int]
+    vat: Optional[int]

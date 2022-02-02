@@ -3,6 +3,7 @@ from fastapi import status
 from typing import List
 
 from .base import BaseService
+from .stocks import stock_service
 from src.dals import PurchaseOrderDAL, PurchaseOrderLineDAL
 from src.models import PurchaseOrder, PurchaseOrderLine
 from src.schemas import (
@@ -63,6 +64,13 @@ class PurchaseOrderLineService(
                         "Problem occured while adding purchase order lines"
                     )
                 )
+            # also increasing stock
+            stock_service.increase_stock_quantity_filtered_by_medicine_id_without_commit(  # noqa E501
+                db,
+                medicine_id=every_purchase_order_line.medicine_id,
+                quantity=every_purchase_order_line.quantity,
+            )
+
         return True
 
 
