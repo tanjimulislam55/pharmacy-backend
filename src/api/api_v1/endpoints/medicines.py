@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -29,6 +29,34 @@ def get_all_medicines(
     limit: int = 10,
 ):
     medicines = medicine_service.get_many(db, skip=skip, limit=limit)
+    return handle_result(medicines)
+
+
+@router.get("/search/brand_name/", response_model=List[MedicineOut])
+def get_medicines_by_brand_name_letters(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    skip: int = 0,
+    limit: int = 10,
+    name_str: Optional[str] = None,
+):
+    medicines = medicine_service.get_many_by_brand_name_letters(
+        db, name_str=name_str, skip=skip, limit=limit
+    )
+    return handle_result(medicines)
+
+
+@router.get("/search/generic_name/", response_model=List[MedicineOut])
+def get_medicines_by_generic_name_letters(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    skip: int = 0,
+    limit: int = 10,
+    name_str: Optional[str] = None,
+):
+    medicines = medicine_service.get_many_by_generic_name_letters(
+        db, name_str=name_str, skip=skip, limit=limit
+    )
     return handle_result(medicines)
 
 

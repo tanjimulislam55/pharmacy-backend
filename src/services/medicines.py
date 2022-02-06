@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import status
+from typing import Optional
 
 from .base import BaseService
 from src.dals import MedicineDAL
@@ -28,6 +29,26 @@ class MedicineService(BaseService[MedicineDAL, MedicineCreate, MedicineUpdate]):
                     AppException.ServerError("Problem while commiting")
                 )
             return ServiceResult(data, status_code=status.HTTP_201_CREATED)
+
+    def get_many_by_brand_name_letters(
+        self, db: Session, name_str: Optional[str], skip: int = 0, limit: int = 10
+    ):
+        data = self.dal(self.model).read_many_filtered_by_brand_name_letters(
+            db, name_str, skip, limit
+        )
+        if not data:
+            return ServiceResult([], status_code=status.HTTP_204_NO_CONTENT)
+        return ServiceResult(data, status_code=status.HTTP_200_OK)
+
+    def get_many_by_generic_name_letters(
+        self, db: Session, name_str: Optional[str], skip: int = 0, limit: int = 10
+    ):
+        data = self.dal(self.model).read_many_filtered_by_generic_name_letters(
+            db, name_str, skip, limit
+        )
+        if not data:
+            return ServiceResult([], status_code=status.HTTP_204_NO_CONTENT)
+        return ServiceResult(data, status_code=status.HTTP_200_OK)
 
 
 medicine_service = MedicineService(MedicineDAL, Medicine)
