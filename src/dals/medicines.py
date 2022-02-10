@@ -28,3 +28,31 @@ class MedicineDAL(BaseDAL[Medicine, MedicineCreate, MedicineUpdate]):
             .limit(limit)
             .all()
         )
+
+    def read_many_filtered_by_manufacturer_id(
+        self, db: Session, manufacturer_id: int, skip: int = 0, limit: int = 10
+    ) -> Optional[Medicine]:
+        return (
+            db.query(self.model)
+            .filter(self.model.manufacturer_id == manufacturer_id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    def read_many_filtered_by_manufacturer_id_and_brand_name(
+        self,
+        db: Session,
+        manufacturer_id: int,
+        name_str: Optional[str],
+        skip: int = 0,
+        limit: int = 10,
+    ) -> Optional[Medicine]:
+        return (
+            db.query(self.model)
+            .filter(self.model.manufacturer_id == manufacturer_id)
+            .filter(self.model.brand_name.like(f"{name_str}%"))
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )

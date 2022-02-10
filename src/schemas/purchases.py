@@ -1,14 +1,9 @@
-from datetime import date
 from pydantic import BaseModel
 from typing import List, Optional
 
 
 class PurchaseOrderLineCreate(BaseModel):
     quantity: int
-    buying_price: float
-    selling_price: float
-    cost: float
-    expiry_date: Optional[date]
     medicine_id: int
 
 

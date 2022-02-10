@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from fastapi.exceptions import RequestValidationError
+from fastapi.exceptions import RequestValidationError, ValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.api_v1.routers import api_router
@@ -10,6 +10,7 @@ from src.utils.app_exceptions import (
     AppExceptionCase,
     AppException,
     app_exception_handler,
+    generic_exception_handler,
 )
 
 app = FastAPI(
@@ -28,12 +29,13 @@ if settings.BACKEND_CORS_ORIGINS:
 
 
 @app.exception_handler(AppExceptionCase)
-async def custom_app_exception_handler(request: Request, exc: AppException):
-    return await app_exception_handler(request, exc)
+def custom_app_exception_handler(request: Request, exc: AppException):
+    print(exc)
+    return app_exception_handler(request, exc)
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+def request_validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=jsonable_encoder(
@@ -49,9 +51,21 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
+@app.exception_handler(ValidationError)
+def validation_exception_handler(request: Request, exc: ValidationError):
+    print(exc)
+    return app_exception_handler(request, AppException.BadRequest(exc))
+
+
+@app.exception_handler(Exception)
+def custom_generic_exception_handler(request: Request, exc: Exception):
+    print(exc)
+    return generic_exception_handler(request, exc)
+
+
 @app.get("/")
-async def root():
-    return {"response": "Hello, World!"}
+def root():
+    return {"message": "Hello, World!"}
 
 
 app.include_router(api_router, prefix=settings.API_V1_STR)

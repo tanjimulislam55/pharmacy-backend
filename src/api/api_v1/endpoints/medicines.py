@@ -60,6 +60,35 @@ def get_medicines_by_generic_name_letters(
     return handle_result(medicines)
 
 
+@router.get("/search/brand_name/{manufacturer_id}", response_model=List[MedicineOut])
+def get_medicines_by_brand_name_letters_and_manufacturer_id(
+    manufacturer_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    skip: int = 0,
+    limit: int = 10,
+    name_str: Optional[str] = None,
+):
+    medicines = medicine_service.get_many_by_manufacturer_id_and_brand_name_letters(
+        db, manufacturer_id=manufacturer_id, name_str=name_str, skip=skip, limit=limit
+    )
+    return handle_result(medicines)
+
+
+@router.get("/search/{manufacturer_id}", response_model=List[MedicineOut])
+def get_medicines_by_manufacturer_id(
+    manufacturer_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    skip: int = 0,
+    limit: int = 10,
+):
+    medicines = medicine_service.get_many_by_manufacturer_id(
+        db, manufacturer_id=manufacturer_id, skip=skip, limit=limit
+    )
+    return handle_result(medicines)
+
+
 @router.get("/{medicine_id}", response_model=MedicineOut)
 def get_medicine_by_id(
     medicine_id: int,

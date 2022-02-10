@@ -7,7 +7,6 @@ from src.schemas import (
     PurchaseOrderOut,
     PurchaseOrderLineCreate,
     PurchaseOrderCreate,
-    PurchaseOrderUpdate,
 )
 from src.models import User
 from src.services import purchase_order_service
@@ -18,6 +17,7 @@ router = APIRouter()
 
 @router.post("/new", response_model=PurchaseOrderOut)
 def create_new_purchase_order(
+    manufacturer_id: int,
     purchase_order_in: PurchaseOrderCreate,
     purchase_order_line_in: List[PurchaseOrderLineCreate],
     db: Session = Depends(get_db),
@@ -42,14 +42,15 @@ def get_all_purchase_orders(
     return handle_result(purchase_orders)
 
 
-@router.put("/{purchase_order_id}", response_model=PurchaseOrderOut)
-def update_purchase_order_by_id(
-    purchase_order_id: int,
-    purchase_order_update: PurchaseOrderUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
-):
-    purchase_order = purchase_order_service.update_by_id(
-        db, id=purchase_order_id, obj_in=purchase_order_update
-    )
-    return handle_result(purchase_order)
+"""if need to update purchase order must update trade. Pending until then"""
+# @router.put("/{purchase_order_id}", response_model=PurchaseOrderOut)
+# def update_purchase_order_by_id(
+#     purchase_order_id: int,
+#     purchase_order_update: PurchaseOrderUpdate,
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_active_user),
+# ):
+#     purchase_order = purchase_order_service.update_by_id(
+#         db, id=purchase_order_id, obj_in=purchase_order_update
+#     )
+#     return handle_result(purchase_order)

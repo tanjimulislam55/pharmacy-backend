@@ -8,6 +8,7 @@ class MedicineCreate(BaseModel):
     dosage_form: Optional[str]
     strength: Optional[str]
     unit_price: Optional[float]
+    depo_price: Optional[float]
     manufacturer_id: int
 
 
@@ -24,3 +25,4 @@ class MedicineUpdate(BaseModel):
     dosage_form: Optional[str]
     strength: Optional[str]
     unit_price: Optional[float]
+    depo_price: Optional[float]

@@ -18,9 +18,9 @@ class MedicineService(BaseService[MedicineDAL, MedicineCreate, MedicineUpdate]):
             return ServiceResult(
                 AppException.ServerError("Problem occured while adding medicine")
             )
-        stock_data: dict = {"medicine_id": medicine.id}
-        stock_in = StockCreate(**stock_data)
-        if stock_service.create_along_with_medicine(db, obj_in=stock_in):
+        if stock_service.create_along_with_medicine(
+            db, obj_in=StockCreate(medicine_id=medicine.id)
+        ):
             data = self.dal(self.model).just_commit_and_return_db_obj(
                 db, db_obj=medicine
             )
@@ -45,6 +45,37 @@ class MedicineService(BaseService[MedicineDAL, MedicineCreate, MedicineUpdate]):
     ):
         data = self.dal(self.model).read_many_filtered_by_generic_name_letters(
             db, name_str, skip, limit
+        )
+        if not data:
+            return ServiceResult([], status_code=status.HTTP_204_NO_CONTENT)
+        return ServiceResult(data, status_code=status.HTTP_200_OK)
+
+    def get_many_by_manufacturer_id(
+        self,
+        manufacturer_id: int,
+        db: Session,
+        skip: int = 0,
+        limit: int = 10,
+    ):
+        data = self.dal(self.model).read_many_filtered_by_manufacturer_id(
+            db, manufacturer_id, skip, limit
+        )
+        if not data:
+            return ServiceResult([], status_code=status.HTTP_204_NO_CONTENT)
+        return ServiceResult(data, status_code=status.HTTP_200_OK)
+
+    def get_many_by_manufacturer_id_and_brand_name_letters(
+        self,
+        manufacturer_id: int,
+        db: Session,
+        name_str: Optional[str],
+        skip: int = 0,
+        limit: int = 10,
+    ):
+        data = self.dal(
+            self.model
+        ).read_many_filtered_by_manufacturer_id_and_brand_name(
+            db, manufacturer_id, name_str, skip, limit
         )
         if not data:
             return ServiceResult([], status_code=status.HTTP_204_NO_CONTENT)

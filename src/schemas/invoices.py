@@ -4,7 +4,8 @@ from typing import List, Optional
 
 class InvoiceOrderLineCreate(BaseModel):
     quantity: int
-    price: float
+    unit_price: float
+    discount: Optional[int]
     cost: float
     medicine_id: int
 

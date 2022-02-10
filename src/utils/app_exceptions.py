@@ -3,6 +3,14 @@ from fastapi import Request, status
 from fastapi.responses import JSONResponse
 
 
+def generic_exception_handler(request: Request, exception: Exception):
+    print(exception)
+    return JSONResponse(
+        status_code=500,
+        content={"context": "Something went wrong", "error": repr(exception)},
+    )
+
+
 class AppExceptionCase(Exception):
     def __init__(self, status_code: status, context: Union[Dict, Any]):
         self.exception_case = self.__class__.__name__
@@ -13,7 +21,7 @@ class AppExceptionCase(Exception):
         return f"<Appexception {self.exception_case} - status_code={self.status_code} context={self.context}>"  # noqa E501
 
 
-async def app_exception_handler(request: Request, exception: AppExceptionCase):
+def app_exception_handler(request: Request, exception: AppExceptionCase):
     return JSONResponse(
         status_code=exception.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={

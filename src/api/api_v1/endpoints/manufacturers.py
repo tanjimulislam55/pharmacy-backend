@@ -17,7 +17,9 @@ def create_manufacturer(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    manufacturer = manufacturer_service.create(db, obj_in=manufacturer_in)
+    manufacturer = manufacturer_service.create_along_with_trade(
+        db, obj_in=manufacturer_in
+    )
     return handle_result(manufacturer)
 
 

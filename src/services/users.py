@@ -17,7 +17,7 @@ class UserService(BaseService[UserDAL, UserCreate, UserUpdate]):
             return ServiceResult(AppException.BadRequest("This email is already taken"))
         db_obj = obj_in.dict(exclude={"password"})
         password = get_password_hash(obj_in.password)
-        db_obj.update({"password": password, "is_active": False, "is_superuser": False})
+        db_obj.update({"password": password, "is_active": False})
         return super().create(
             db, obj_in=UserInDB(**db_obj)
         )  # after modify had to unwrap as dal works with object-type BaseModel

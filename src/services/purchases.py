@@ -3,14 +3,15 @@ from fastapi import status
 from typing import List
 
 from .base import BaseService
-from .stocks import stock_service
 from src.dals import PurchaseOrderDAL, PurchaseOrderLineDAL
 from src.models import PurchaseOrder, PurchaseOrderLine
 from src.schemas import (
     PurchaseOrderCreate,
     PurchaseOrderUpdate,
     PurchaseOrderLineCreate,
+    TradeUpdate,
 )
+from .manufacturers import trade_service
 from src.utils.service_result import ServiceResult
 from src.utils.app_exceptions import AppException
 
@@ -20,6 +21,7 @@ class PurchaseOrderService(
 ):
     def create_along_with_purchase_lines(
         self,
+        manufacturer_id: int,
         db: Session,
         obj_in_for_purchase_order: PurchaseOrderCreate,
         obj_in_for_purchase_order_lines: List[PurchaseOrderLineCreate],
@@ -36,6 +38,16 @@ class PurchaseOrderService(
             obj_in=obj_in_for_purchase_order_lines,
             purchase_order_id=purchase_order.id,
         ):
+            """also updating trade"""
+            trade_service.update_by_manufacturer_id_while_processing_purchase_order(
+                db,
+                manufacturer_id,
+                obj_in=TradeUpdate(
+                    closing_balance=purchase_order.paid_amount,
+                    outstanding_amount=purchase_order.due_amount,
+                ),
+            )
+            """finally commiting"""
             data = self.dal(self.model).just_commit_and_return_db_obj(
                 db, db_obj=purchase_order
             )
@@ -64,12 +76,6 @@ class PurchaseOrderLineService(
                         "Problem occured while adding purchase order lines"
                     )
                 )
-            # also increasing stock
-            stock_service.increase_stock_quantity_filtered_by_medicine_id_without_commit(  # noqa E501
-                db,
-                medicine_id=every_purchase_order_line.medicine_id,
-                quantity=every_purchase_order_line.quantity,
-            )
 
         return True
 
