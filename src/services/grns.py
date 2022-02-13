@@ -59,8 +59,8 @@ class GRNService(BaseService[GRNDAL, GRNCreate, GRNUpdate]):
                 db,
                 medicine_id=every_grn_obj.medicine_id,
                 obj_in=StockUpdate(
-                    last_date_of_purchase=datetime,
-                    last_purchased_quantity=every_grn_obj.cost,
+                    last_date_of_purchase=datetime.now(),
+                    last_purchased_quantity=every_grn_obj.quantity,
                 ),
             )
             total_cost_from_grns += every_grn_obj.cost

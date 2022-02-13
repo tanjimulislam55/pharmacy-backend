@@ -24,7 +24,7 @@ class InvoiceOrderService(
         obj_in_for_invoice_order: InvoiceOrderCreate,
         obj_in_for_invoice_order_lines: List[InvoiceOrderLineCreate],
     ):
-        # initially checking for stock availability
+        """initially checking for stock availability"""
         for every_invoice_order_line in obj_in_for_invoice_order_lines:
             available_quantity = stock_service.available_quantity(
                 db,
@@ -75,7 +75,7 @@ class InvoiceOrderLineService(
                     )
                 )
 
-            # also decreasing stock quantity
+            """also decreasing stock quantity"""
             stock_service.decrease_stock_quantity_filtered_by_medicine_id_without_commit(  # noqa E501
                 db,
                 medicine_id=every_invoice_order_line.medicine_id,

@@ -57,7 +57,17 @@ class StockService(BaseService[StockDAL, StockCreate, StockUpdate]):
         self, db: Session, medicine_id: int, obj_in: StockUpdate
     ):
         stock = self.dal(self.model).update_one_filtered_by_medicine_id(
-            self, db, medicine_id, obj_in
+            db, medicine_id, obj_in
+        )
+        if not stock:
+            return ServiceResult(AppException.NotAccepted("Could not update stock"))
+        return stock
+
+    def update_filtered_by_medicine_id_with_commit(
+        self, db: Session, medicine_id: int, obj_in: StockUpdate
+    ):
+        stock = self.dal(self.model).update_one_filtered_by_medicine_id_with_commit(
+            db, medicine_id, obj_in
         )
         if not stock:
             return ServiceResult(AppException.NotAccepted("Could not update stock"))
