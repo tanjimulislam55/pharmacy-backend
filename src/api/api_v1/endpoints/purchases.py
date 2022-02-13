@@ -25,6 +25,7 @@ def create_new_purchase_order(
 ):
     purchase_order = purchase_order_service.create_along_with_purchase_lines(
         db,
+        manufacturer_id,
         obj_in_for_purchase_order=purchase_order_in,
         obj_in_for_purchase_order_lines=purchase_order_line_in,
     )

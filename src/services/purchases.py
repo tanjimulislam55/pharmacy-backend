@@ -21,8 +21,8 @@ class PurchaseOrderService(
 ):
     def create_along_with_purchase_lines(
         self,
-        manufacturer_id: int,
         db: Session,
+        manufacturer_id: int,
         obj_in_for_purchase_order: PurchaseOrderCreate,
         obj_in_for_purchase_order_lines: List[PurchaseOrderLineCreate],
     ):

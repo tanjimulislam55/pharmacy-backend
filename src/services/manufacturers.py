@@ -62,7 +62,7 @@ class TradeService(BaseService[TradeDAL, TradeCreate, TradeUpdate]):
         data = self.dal(
             self.model
         ).update_one_filtered_by_manufacturer_id_without_commit(
-            db, manufacturer_id, obj_in
+            db, obj_in, manufacturer_id
         )
         if not data:
             return ServiceResult(AppException.NotAccepted())

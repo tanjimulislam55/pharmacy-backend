@@ -42,7 +42,7 @@ class StockService(BaseService[StockDAL, StockCreate, StockUpdate]):
     ):
         stock = self.dal(
             self.model
-        ).increase_stock_quantity_filtered_by_medicine_id_without_commit(
+        ).decrease_stock_quantity_filtered_by_medicine_id_without_commit(
             db, medicine_id, quantity
         )
         if not stock:
