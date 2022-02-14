@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError, ValidationError
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
 from src.api.api_v1.routers import api_router
 from src.core.config import settings
@@ -69,3 +70,7 @@ def root():
 
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", port=3000, host="127.0.0.1", reload=True)

@@ -1,1 +1,12 @@
-fastapi
+fastapi==0.70.0
+uvicorn
+python-jose
+passlib
+email-validator
+mysql-connector-python==8.0.27
+python-dotenv
+python-multipart
+SQLAlchemy==1.4.27
+regex
+black
+flake8
