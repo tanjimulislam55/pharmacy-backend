@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
 
 
 class InvoiceOrderLineCreate(BaseModel):
@@ -31,6 +32,7 @@ class InvoiceOrderCreate(BaseModel):
 
 class InvoiceOrderOut(InvoiceOrderCreate):
     id: int
+    created_at: Optional[datetime]
     invoice_lines: Optional[List[InvoiceOrderLineOut]] = None
 
     class Config:
