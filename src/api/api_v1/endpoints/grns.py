@@ -1,4 +1,5 @@
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -29,4 +30,25 @@ def get_all_grns(
     limit: int = 10,
 ):
     grns = grn_service.get_many(db, skip=skip, limit=limit)
+    return handle_result(grns)
+
+
+@router.get("/filtered_by_expiry_date/", response_model=List[GRNOut])
+def get_all_grns_filtered_by_expiry_date(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    skip: int = 0,
+    limit: int = 10,
+    from_datetime: Optional[datetime] = datetime.strptime(
+        "2000-01-01 00:00:00", "%Y-%m-%d %H:%M:%S"
+    ),
+    till_datetime: Optional[datetime] = str(datetime.now()),
+):
+    grns = grn_service.get_many_filtered_by_expiry_date(
+        db,
+        from_datetime=from_datetime,
+        till_datetime=till_datetime,
+        skip=skip,
+        limit=limit,
+    )
     return handle_result(grns)

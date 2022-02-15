@@ -17,7 +17,6 @@ router = APIRouter()
 
 @router.post("/new", response_model=PurchaseOrderOut)
 def create_new_purchase_order(
-    manufacturer_id: int,
     purchase_order_in: PurchaseOrderCreate,
     purchase_order_line_in: List[PurchaseOrderLineCreate],
     db: Session = Depends(get_db),
@@ -25,7 +24,6 @@ def create_new_purchase_order(
 ):
     purchase_order = purchase_order_service.create_along_with_purchase_lines(
         db,
-        manufacturer_id,
         obj_in_for_purchase_order=purchase_order_in,
         obj_in_for_purchase_order_lines=purchase_order_line_in,
     )

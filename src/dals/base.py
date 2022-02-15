@@ -1,6 +1,8 @@
 from typing import Any, Generic, List, Optional, Type, Union, TypeVar
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from datetime import datetime
+
 from src.db.config import Base
 
 
@@ -42,6 +44,22 @@ class BaseDAL(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self, db: Session, skip: int = 0, limit: int = 100
     ) -> List[ModelType]:
         return db.query(self.model).offset(skip).limit(limit).all()
+
+    def read_many_offset_limit_filtered_by_datetime(
+        self,
+        db: Session,
+        from_datetime: Optional[datetime],
+        till_datetime: Optional[datetime],
+        skip: int = 0,
+        limit: int = 10,
+    ) -> List[ModelType]:
+        return (
+            db.query(self.model)
+            .filter(self.model.created_at.between(from_datetime, till_datetime))
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
 
     def read_all(self, db: Session) -> List[ModelType]:
         return db.query(self.model).all()

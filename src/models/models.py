@@ -76,6 +76,8 @@ class Manufacturer(BaseModel):
     medicine = relationship("Medicine", back_populates="manufacturer")
     trade = relationship("Trade", uselist=False, back_populates="manufacturer")
     trade_histories = relationship("TradeHistory", back_populates="manufacturer")
+    purchase_orders = relationship("PurchaseOrder", back_populates="manufacturer")
+    grns = relationship("GRN", back_populates="manufacturer")
 
 
 class Trade(BaseModel):
@@ -168,10 +170,12 @@ class PurchaseOrder(BaseModel):
     due_amount = Column(Float, nullable=False)
     note = Column(Text, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="SET NULL")) # noqa E501
 
     purchase_lines = relationship("PurchaseOrderLine", back_populates="purchase")
     user = relationship("User", back_populates="purchases")
     grns = relationship("GRN", back_populates="purchase_order")
+    manufacturer = relationship("Manufacturer", back_populates="purchase_orders")
 
 
 class PurchaseOrderLine(BaseModel):
@@ -196,6 +200,8 @@ class GRN(BaseModel):
     expiry_date = Column(Date, nullable=True)
     medicine_id = Column(Integer, ForeignKey("medicines.id", ondelete="SET NULL"))
     purchase_id = Column(Integer, ForeignKey("purchase_orders.id", ondelete="CASCADE")) # noqa E501
+    manufacture_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="SET NULL")) # noqa E501
 
     purchase_order = relationship("PurchaseOrder", back_populates="grns")
     medicine = relationship("Medicine", back_populates="grns")
+    manufacturer = relationship("Manufacturer", back_populates="grns")

@@ -22,7 +22,6 @@ class PurchaseOrderService(
     def create_along_with_purchase_lines(
         self,
         db: Session,
-        manufacturer_id: int,
         obj_in_for_purchase_order: PurchaseOrderCreate,
         obj_in_for_purchase_order_lines: List[PurchaseOrderLineCreate],
     ):
@@ -41,7 +40,7 @@ class PurchaseOrderService(
             """also updating trade"""
             trade_service.update_by_manufacturer_id_while_processing_purchase_order(
                 db,
-                manufacturer_id,
+                manufacturer_id=purchase_order.manufacturer_id,
                 obj_in=TradeUpdate(
                     closing_balance=purchase_order.paid_amount,
                     outstanding_amount=purchase_order.due_amount,

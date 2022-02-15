@@ -21,6 +21,7 @@ class PurchaseOrderCreate(BaseModel):
     due_amount: float
     note: Optional[str]
     user_id: int
+    manufacturer_id: int
 
 
 class PurchaseOrderOut(PurchaseOrderCreate):

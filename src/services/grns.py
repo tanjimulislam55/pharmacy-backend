@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import status
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
 from .base import BaseService
@@ -71,6 +71,23 @@ class GRNService(BaseService[GRNDAL, GRNCreate, GRNUpdate]):
             amount=total_cost_from_grns,
         )
         return [ServiceResult(grn, status_code=status.HTTP_201_CREATED) for grn in grns]
+
+    def get_many_filtered_by_expiry_date(
+        self,
+        db: Session,
+        from_datetime: Optional[datetime],
+        till_datetime: Optional[datetime],
+        skip: int = 0,
+        limit: int = 10,
+    ):
+        data = self.dal(self.model).read_many_offset_limit_filtered_by_expiry_date(
+            db, from_datetime, till_datetime, skip, limit
+        )
+        if not data:
+            return ServiceResult(
+                AppException.NotFound(f"No {self.model.__name__.lower()}s found")
+            )
+        return ServiceResult(data, status_code=status.HTTP_200_OK)
 
 
 grn_service = GRNService(GRNDAL, GRN)

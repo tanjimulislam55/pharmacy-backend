@@ -12,6 +12,7 @@ class GRNCreate(BaseModel):
     expiry_date: Optional[date]
     medicine_id: int
     purchase_id: int
+    manufacturer_id: int
 
 
 class GRNOut(GRNCreate):

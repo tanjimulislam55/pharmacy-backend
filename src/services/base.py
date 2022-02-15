@@ -1,7 +1,8 @@
-from typing import Generic, Type, TypeVar
+from typing import Generic, Type, TypeVar, Optional
 from fastapi import status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from src.db.config import Base
 from src.dals.base import BaseDAL
@@ -38,6 +39,23 @@ class BaseService(Generic[ModelDAL, CreateSchemaType, UpdateSchemaType]):
 
     def get_many(self, db: Session, skip: int = 0, limit: int = 10):
         data = self.dal(self.model).read_many_offset_limit(db, skip=skip, limit=limit)
+        if not data:
+            return ServiceResult(
+                AppException.NotFound(f"No {self.model.__name__.lower()}s found")
+            )
+        return ServiceResult(data, status_code=status.HTTP_200_OK)
+
+    def get_many_filtered_by_datetime(
+        self,
+        db: Session,
+        from_datetime: Optional[datetime],
+        till_datetime: Optional[datetime],
+        skip: int = 0,
+        limit: int = 10,
+    ):
+        data = self.dal(self.model).read_many_offset_limit_filtered_by_datetime(
+            db, from_datetime, till_datetime, skip, limit
+        )
         if not data:
             return ServiceResult(
                 AppException.NotFound(f"No {self.model.__name__.lower()}s found")

@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from src.api.deps import get_current_active_user, get_db
 from src.schemas import (
@@ -39,6 +40,27 @@ def get_all_invoice_orders(
     limit: int = 10,
 ):
     invoice_orders = invoice_order_service.get_many(db, skip=skip, limit=limit)
+    return handle_result(invoice_orders)
+
+
+@router.get("/filtered_by/", response_model=List[InvoiceOrderOut])
+def get_all_invoice_orders_filtered_by_datetime(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    skip: int = 0,
+    limit: int = 10,
+    from_datetime: Optional[datetime] = datetime.strptime(
+        "2000-01-01 00:00:00", "%Y-%m-%d %H:%M:%S"
+    ),
+    till_datetime: Optional[datetime] = str(datetime.now()),
+):
+    invoice_orders = invoice_order_service.get_many_filtered_by_datetime(
+        db,
+        from_datetime=from_datetime,
+        till_datetime=till_datetime,
+        skip=skip,
+        limit=limit,
+    )
     return handle_result(invoice_orders)
 
 
