@@ -26,3 +26,13 @@ class MedicineUpdate(BaseModel):
     strength: Optional[str]
     unit_price: Optional[float]
     depo_price: Optional[float]
+
+
+class MedicineJoinStock(BaseModel):
+    id: int
+    brand_name: Optional[str]
+    unit_price: Optional[float]
+    in_stock: Optional[int]
+
+    class Config:
+        orm_mode = True

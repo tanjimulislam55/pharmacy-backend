@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from src.api.deps import get_current_active_user, get_db
-from src.schemas import MedicineCreate, MedicineOut, MedicineUpdate
+from src.schemas import MedicineCreate, MedicineOut, MedicineUpdate, MedicineJoinStock
 from src.models import User
 from src.services import medicine_service
 from src.utils.service_result import handle_result
@@ -30,6 +30,23 @@ def get_all_medicines(
 ):
     medicines = medicine_service.get_many(db, skip=skip, limit=limit)
     return handle_result(medicines)
+
+
+@router.get("/join/stock", response_model=List[MedicineJoinStock])
+def get_all_medicines_joined_with_stocks(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    medicines = medicine_service.get_many_join_with_stock(db)
+    return handle_result(medicines)
+
+
+@router.get("/get_medicine_costs_of_stock")
+def get_medicine_costs_of_stock(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
+):
+    value = medicine_service.calculate_total_stock_costs(db)
+    return {"value": handle_result(value)}
 
 
 @router.get("/search/brand_name/", response_model=List[MedicineOut])

@@ -7,7 +7,7 @@ from src.dals import MedicineDAL
 from src.models import Medicine
 from src.schemas import MedicineCreate, MedicineUpdate, StockCreate
 from .stocks import stock_service
-from src.utils.service_result import ServiceResult
+from src.utils.service_result import ServiceResult, handle_result
 from src.utils.app_exceptions import AppException
 
 
@@ -80,6 +80,21 @@ class MedicineService(BaseService[MedicineDAL, MedicineCreate, MedicineUpdate]):
         if not data:
             return ServiceResult([], status_code=status.HTTP_204_NO_CONTENT)
         return ServiceResult(data, status_code=status.HTTP_200_OK)
+
+    def get_many_join_with_stock(self, db: Session):
+        medicines = self.dal(self.model).read_many_join_with_stock(db)
+        if not medicines:
+            return ServiceResult(AppException.NotFound("No medicines found"))
+        return ServiceResult(medicines, status_code=status.HTTP_200_OK)
+
+    def calculate_total_stock_costs(self, db: Session) -> float:
+        data = self.get_many_join_with_stock(db)
+        if not data:
+            return 0
+        sum: float = 0
+        for item in handle_result(data):
+            sum += item.in_stock * item.unit_price
+        return ServiceResult(sum, status_code=status.HTTP_200_OK)
 
 
 medicine_service = MedicineService(MedicineDAL, Medicine)
