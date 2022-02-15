@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Literal
 from datetime import datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
@@ -52,3 +52,22 @@ def get_all_grns_filtered_by_expiry_date(
         limit=limit,
     )
     return handle_result(grns)
+
+
+@router.get("/get_sum_filtered_by_datetime/")
+def get_sum_filtered_by_datetime(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    from_datetime: Optional[datetime] = datetime.strptime(
+        "2000-01-01 00:00:00", "%Y-%m-%d %H:%M:%S"
+    ),
+    till_datetime: Optional[datetime] = str(datetime.now()),
+    column_name: Optional[Literal["cost", "quantity"]] = None,
+):
+    value = grn_service.get_sum_of_values_for_specific_column_filtered_by_datetime(  # noqa E501
+        db,
+        from_datetime=from_datetime,
+        till_datetime=till_datetime,
+        column_name=column_name,
+    )
+    return handle_result(value)

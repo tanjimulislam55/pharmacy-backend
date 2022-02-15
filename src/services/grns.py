@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import status
-from typing import List, Optional
+from typing import List, Optional, Literal
 from datetime import datetime
 
 from .base import BaseService
@@ -88,6 +88,26 @@ class GRNService(BaseService[GRNDAL, GRNCreate, GRNUpdate]):
                 AppException.NotFound(f"No {self.model.__name__.lower()}s found")
             )
         return ServiceResult(data, status_code=status.HTTP_200_OK)
+
+    def get_sum_of_values_for_specific_column_filtered_by_datetime(
+        self,
+        db: Session,
+        from_datetime: Optional[datetime],
+        till_datetime: Optional[datetime],
+        column_name: Literal["cost", "quantity"],
+    ) -> float:
+        data = self.dal(self.model).read_many_offset_limit_filtered_by_datetime(
+            db, from_datetime, till_datetime, skip=0, limit=99999
+        )
+        if not data:
+            return None
+        sum: float = 0
+        for item in data:
+            if column_name == "cost":
+                sum += item.cost
+            elif column_name == "quantity":
+                sum += item.quantity
+        return ServiceResult(sum, status_code=status.HTTP_200_OK)
 
 
 grn_service = GRNService(GRNDAL, GRN)

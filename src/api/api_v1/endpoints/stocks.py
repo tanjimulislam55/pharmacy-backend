@@ -22,6 +22,15 @@ def get_all_stocks(
     return handle_result(stocks)
 
 
+@router.get("/get_total_stock/")
+def get_total_medicine_quantity_in_stock(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    value = stock_service.get_sum_of_in_stock_values_filtered_by_datetime(db)
+    return handle_result(value)
+
+
 @router.put("/{stock_id}", response_model=StockOut)
 def update_stock_by_id(
     stock_id: int,

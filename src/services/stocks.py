@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from fastapi import status
 
 from .base import BaseService
 from src.dals import StockDAL
@@ -72,6 +73,18 @@ class StockService(BaseService[StockDAL, StockCreate, StockUpdate]):
         if not stock:
             return ServiceResult(AppException.NotAccepted("Could not update stock"))
         return stock
+
+    def get_sum_of_in_stock_values_filtered_by_datetime(
+        self,
+        db: Session,
+    ) -> int:
+        data = self.dal(self.model).read_all(db)
+        if not data:
+            return None
+        sum: int = 0
+        for item in data:
+            sum += item.in_stock
+        return ServiceResult(sum, status_code=status.HTTP_200_OK)
 
 
 stock_service = StockService(StockDAL, Stock)
