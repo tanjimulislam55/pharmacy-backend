@@ -108,5 +108,24 @@ class GRNService(BaseService[GRNDAL, GRNCreate, GRNUpdate]):
         sum: dict = {"sum_of_cost": sum_c, "sum_of_quantity": sum_q}
         return ServiceResult(sum, status_code=status.HTTP_200_OK)
 
+    def get_sum_of_values_for_specific_column_filtered_by_expiry_date(
+        self,
+        db: Session,
+        from_datetime: Optional[datetime],
+        till_datetime: Optional[datetime],
+    ) -> float:
+        data = self.dal(self.model).read_many_offset_limit_filtered_by_expiry_date(
+            db, from_datetime, till_datetime, skip=0, limit=99999
+        )
+        if not data:
+            return None
+        sum_c: float = 0
+        sum_q: float = 0
+        for item in data:
+            sum_c += item.cost
+            sum_q += item.quantity
+        sum: dict = {"sum_of_cost": sum_c, "sum_of_quantity": sum_q}
+        return ServiceResult(sum, status_code=status.HTTP_200_OK)
+
 
 grn_service = GRNService(GRNDAL, GRN)

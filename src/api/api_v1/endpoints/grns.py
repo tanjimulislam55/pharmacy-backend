@@ -69,3 +69,20 @@ def get_sum_filtered_by_datetime(
         till_datetime=till_datetime,
     )
     return handle_result(value)
+
+
+@router.get("/get_sum_filtered_by_expiry_date/")
+def get_sum_filtered_by_expiry_date(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    from_datetime: Optional[datetime] = datetime.strptime(
+        "2000-01-01 00:00:00", "%Y-%m-%d %H:%M:%S"
+    ),
+    till_datetime: Optional[datetime] = str(datetime.now()),
+):
+    value = grn_service.get_sum_of_values_for_specific_column_filtered_by_expiry_date(  # noqa E501
+        db,
+        from_datetime=from_datetime,
+        till_datetime=till_datetime,
+    )
+    return handle_result(value)
