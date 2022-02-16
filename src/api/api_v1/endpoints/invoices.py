@@ -80,7 +80,7 @@ def get_sum_filtered_by_datetime(
         till_datetime=till_datetime,
         column_name=column_name,
     )
-    return handle_result(value)
+    return {"value": handle_result(value)}
 
 
 @router.put("/{invoice_order_id}", response_model=InvoiceOrderUpdate)

@@ -200,7 +200,7 @@ class GRN(BaseModel):
     expiry_date = Column(Date, nullable=True)
     medicine_id = Column(Integer, ForeignKey("medicines.id", ondelete="SET NULL"))
     purchase_id = Column(Integer, ForeignKey("purchase_orders.id", ondelete="CASCADE")) # noqa E501
-    manufacture_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="SET NULL")) # noqa E501
+    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="SET NULL")) # noqa E501
 
     purchase_order = relationship("PurchaseOrder", back_populates="grns")
     medicine = relationship("Medicine", back_populates="grns")
