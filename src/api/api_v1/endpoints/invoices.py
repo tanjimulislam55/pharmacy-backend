@@ -1,4 +1,4 @@
-from typing import List, Optional, Literal
+from typing import List, Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -72,15 +72,13 @@ def get_sum_filtered_by_datetime(
         "2000-01-01 00:00:00", "%Y-%m-%d %H:%M:%S"
     ),
     till_datetime: Optional[datetime] = str(datetime.now()),
-    column_name: Optional[Literal["total_amount", "paid_amount", "due_amount"]] = None,
 ):
     value = invoice_order_service.get_sum_of_values_for_specific_column_filtered_by_datetime(  # noqa E501
         db,
         from_datetime=from_datetime,
         till_datetime=till_datetime,
-        column_name=column_name,
     )
-    return {"value": handle_result(value)}
+    return handle_result(value)
 
 
 @router.put("/{invoice_order_id}", response_model=InvoiceOrderUpdate)

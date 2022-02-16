@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import status
-from typing import List, Optional, Literal
+from typing import List, Optional
 from datetime import datetime
 
 from .base import BaseService
@@ -61,21 +61,24 @@ class InvoiceOrderService(
         db: Session,
         from_datetime: Optional[datetime],
         till_datetime: Optional[datetime],
-        column_name: Literal["total_amount", "paid_amount", "due_amount"],
     ) -> float:
         data = self.dal(self.model).read_many_offset_limit_filtered_by_datetime(
             db, from_datetime, till_datetime, skip=0, limit=99999
         )
         if not data:
             return None
-        sum: float = 0
+        sum_t: float = 0
+        sum_d: float = 0
+        sum_p: float = 0
         for item in data:
-            if column_name == "total_amount":
-                sum += item.total_amount
-            elif column_name == "due_amount":
-                sum += item.due_amount
-            elif column_name == "paid_amount":
-                sum += item.paid_amount
+            sum_t += item.total_amount
+            sum_d += item.due_amount
+            sum_p += item.paid_amount
+        sum: dict = {
+            "sum_of_total_amount": sum_t,
+            "sum_of_due_amount": sum_d,
+            "sum_of_paid_amount": sum_p,
+        }
         return ServiceResult(sum, status_code=status.HTTP_200_OK)
 
 
