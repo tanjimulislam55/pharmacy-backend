@@ -62,12 +62,10 @@ def get_sum_filtered_by_datetime(
         "2000-01-01 00:00:00", "%Y-%m-%d %H:%M:%S"
     ),
     till_datetime: Optional[datetime] = str(datetime.now()),
-    column_name: Optional[Literal["cost", "quantity"]] = None,
 ):
     value = grn_service.get_sum_of_values_for_specific_column_filtered_by_datetime(  # noqa E501
         db,
         from_datetime=from_datetime,
         till_datetime=till_datetime,
-        column_name=column_name,
     )
     return handle_result(value)

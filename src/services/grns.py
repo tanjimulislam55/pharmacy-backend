@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import status
-from typing import List, Optional, Literal
+from typing import List, Optional
 from datetime import datetime
 
 from .base import BaseService
@@ -94,19 +94,18 @@ class GRNService(BaseService[GRNDAL, GRNCreate, GRNUpdate]):
         db: Session,
         from_datetime: Optional[datetime],
         till_datetime: Optional[datetime],
-        column_name: Literal["cost", "quantity"],
     ) -> float:
         data = self.dal(self.model).read_many_offset_limit_filtered_by_datetime(
             db, from_datetime, till_datetime, skip=0, limit=99999
         )
         if not data:
             return None
-        sum: float = 0
+        sum_c: float = 0
+        sum_q: float = 0
         for item in data:
-            if column_name == "cost":
-                sum += item.cost
-            elif column_name == "quantity":
-                sum += item.quantity
+            sum_c += item.cost
+            sum_q += item.quantity
+        sum: dict = {"sum_of_cost": sum_c, "sum_of_quantity": sum_q}
         return ServiceResult(sum, status_code=status.HTTP_200_OK)
 
 
