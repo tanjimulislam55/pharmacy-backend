@@ -65,7 +65,9 @@ class InvoiceOrderService(
         data = self.dal(self.model).read_many_offset_limit_filtered_by_datetime(
             db, from_datetime, till_datetime, skip=0, limit=99999
         )
-        sum_t, sum_d, sum_p = 0
+        sum_t: float = 0
+        sum_d: float = 0
+        sum_p: float = 0
         if not data:
             sum: dict = {
                 "sum_of_total_amount": sum_t,

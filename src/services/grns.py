@@ -98,7 +98,8 @@ class GRNService(BaseService[GRNDAL, GRNCreate, GRNUpdate]):
         data = self.dal(self.model).read_many_offset_limit_filtered_by_datetime(
             db, from_datetime, till_datetime, skip=0, limit=99999
         )
-        sum_c, sum_q = 0
+        sum_c: float = 0
+        sum_q: float = 0
         if not data:
             sum: dict = {"sum_of_cost": sum_c, "sum_of_quantity": sum_q}
             return ServiceResult(sum, status_code=status.HTTP_204_NO_CONTENT)
@@ -117,7 +118,8 @@ class GRNService(BaseService[GRNDAL, GRNCreate, GRNUpdate]):
         data = self.dal(self.model).read_many_offset_limit_filtered_by_expiry_date(
             db, from_datetime, till_datetime, skip=0, limit=99999
         )
-        sum_c, sum_q = 0
+        sum_c: float = 0
+        sum_q: float = 0
         if not data:
             sum: dict = {"sum_of_cost": sum_c, "sum_of_quantity": sum_q}
             return ServiceResult(sum, status_code=status.HTTP_204_NO_CONTENT)
