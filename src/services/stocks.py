@@ -79,9 +79,9 @@ class StockService(BaseService[StockDAL, StockCreate, StockUpdate]):
         db: Session,
     ) -> int:
         data = self.dal(self.model).read_all(db)
-        if not data:
-            return None
         sum: int = 0
+        if not data:
+            return ServiceResult(sum, status_code=status.HTTP_204_NO_CONTENT)
         for item in data:
             sum += item.in_stock
         return ServiceResult(sum, status_code=status.HTTP_200_OK)

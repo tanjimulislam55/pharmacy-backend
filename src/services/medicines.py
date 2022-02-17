@@ -89,9 +89,9 @@ class MedicineService(BaseService[MedicineDAL, MedicineCreate, MedicineUpdate]):
 
     def calculate_total_stock_costs(self, db: Session) -> float:
         data = self.get_many_join_with_stock(db)
-        if not data:
-            return 0
         sum: float = 0
+        if not data:
+            return ServiceResult(sum, status_code=status.HTTP_204_NO_CONTENT)
         for item in handle_result(data):
             sum += item.in_stock * item.unit_price
         return ServiceResult(sum, status_code=status.HTTP_200_OK)

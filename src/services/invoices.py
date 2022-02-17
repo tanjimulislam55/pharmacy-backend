@@ -65,11 +65,14 @@ class InvoiceOrderService(
         data = self.dal(self.model).read_many_offset_limit_filtered_by_datetime(
             db, from_datetime, till_datetime, skip=0, limit=99999
         )
+        sum_t, sum_d, sum_p = 0
         if not data:
-            return None
-        sum_t: float = 0
-        sum_d: float = 0
-        sum_p: float = 0
+            sum: dict = {
+                "sum_of_total_amount": sum_t,
+                "sum_of_due_amount": sum_d,
+                "sum_of_paid_amount": sum_p,
+            }
+            return ServiceResult(sum, status_code=status.HTTP_204_NO_CONTENT)
         for item in data:
             sum_t += item.total_amount
             sum_d += item.due_amount
