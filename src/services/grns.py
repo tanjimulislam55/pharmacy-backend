@@ -8,11 +8,11 @@ from .stocks import stock_service
 from .medicines import medicine_service
 from .purchases import purchase_order_service
 from .manufacturers import trade_history_service
-from src.dals import GRNDAL
-from src.models import GRN, Medicine
-from src.schemas import GRNCreate, GRNUpdate, StockUpdate
-from src.utils.service_result import ServiceResult, handle_result
-from src.utils.app_exceptions import AppException
+from dals import GRNDAL
+from models import GRN, Medicine
+from schemas import GRNCreate, GRNUpdate, StockUpdate
+from utils.service_result import ServiceResult, handle_result
+from utils.app_exceptions import AppException
 
 
 class GRNService(BaseService[GRNDAL, GRNCreate, GRNUpdate]):

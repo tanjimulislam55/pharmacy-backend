@@ -4,10 +4,10 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from src.db.config import Base
-from src.dals.base import BaseDAL
-from src.utils.app_exceptions import AppException
-from src.utils.service_result import ServiceResult
+from db.config import Base
+from dals.base import BaseDAL
+from utils.app_exceptions import AppException
+from utils.service_result import ServiceResult
 
 
 ModelType = TypeVar("ModelType", bound=Base)

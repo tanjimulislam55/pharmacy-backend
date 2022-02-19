@@ -5,9 +5,9 @@ from fastapi.exceptions import RequestValidationError, ValidationError
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from src.api.api_v1.routers import api_router
-from src.core.config import settings
-from src.utils.app_exceptions import (
+from api.api_v1.routers import api_router
+from core.config import settings
+from utils.app_exceptions import (
     AppExceptionCase,
     AppException,
     app_exception_handler,
@@ -73,4 +73,4 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", port=3000, host="127.0.0.1", reload=True)
+    uvicorn.run("main:app", port=8000, host="127.0.0.1", reload=True)

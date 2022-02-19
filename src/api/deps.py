@@ -5,13 +5,13 @@ from sqlalchemy.orm import Session
 from pydantic import ValidationError
 from jose import jwt
 
-from src.schemas import TokenPayload
-from src.models import User
-from src.services.users import user_service
-from src.core.config import settings
-from src.db.config import SessionLocal
-from src.utils.service_result import ServiceResult, handle_result
-from src.utils.app_exceptions import AppException
+from schemas import TokenPayload
+from models import User
+from services.users import user_service
+from core.config import settings
+from db.config import SessionLocal
+from utils.service_result import ServiceResult, handle_result
+from utils.app_exceptions import AppException
 
 
 oauth2_scheme = OAuth2PasswordBearer(

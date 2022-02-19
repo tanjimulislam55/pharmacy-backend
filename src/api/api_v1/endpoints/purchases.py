@@ -2,15 +2,15 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.api.deps import get_current_active_user, get_db
-from src.schemas import (
+from api.deps import get_current_active_user, get_db
+from schemas import (
     PurchaseOrderOut,
     PurchaseOrderLineCreate,
     PurchaseOrderCreate,
 )
-from src.models import User
-from src.services import purchase_order_service
-from src.utils.service_result import handle_result
+from models import User
+from services import purchase_order_service
+from utils.service_result import handle_result
 
 router = APIRouter()
 

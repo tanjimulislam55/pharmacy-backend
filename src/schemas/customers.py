@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr
 from pydantic.types import constr
 from typing import Optional
 
-from src.utils.enums import GenderEnum, BloodGroupEnum
+from utils.enums import GenderEnum, BloodGroupEnum
 
 
 class CustomerCreate(BaseModel):

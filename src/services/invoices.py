@@ -5,15 +5,15 @@ from datetime import datetime
 
 from .base import BaseService
 from .stocks import stock_service
-from src.dals import InvoiceOrderDAL, InvoiceOrderLineDAL
-from src.models import InvoiceOrder, InvoiceOrderLine
-from src.schemas import (
+from dals import InvoiceOrderDAL, InvoiceOrderLineDAL
+from models import InvoiceOrder, InvoiceOrderLine
+from schemas import (
     InvoiceOrderCreate,
     InvoiceOrderUpdate,
     InvoiceOrderLineCreate,
 )
-from src.utils.service_result import ServiceResult
-from src.utils.app_exceptions import AppException
+from utils.service_result import ServiceResult
+from utils.app_exceptions import AppException
 
 
 class InvoiceOrderService(

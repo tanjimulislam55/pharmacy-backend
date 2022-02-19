@@ -2,8 +2,8 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from .base import BaseDAL
-from src.models import User
-from src.schemas import UserCreate, UserUpdate
+from models import User
+from schemas import UserCreate, UserUpdate
 
 
 class UserDAL(BaseDAL[User, UserCreate, UserUpdate]):

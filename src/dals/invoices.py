@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
 from .base import BaseDAL
-from src.models import InvoiceOrder, InvoiceOrderLine
-from src.schemas import (
+from models import InvoiceOrder, InvoiceOrderLine
+from schemas import (
     InvoiceOrderCreate,
     InvoiceOrderLineCreate,
     InvoiceOrderUpdate,

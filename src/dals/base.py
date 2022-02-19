@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from datetime import datetime
 
-from src.db.config import Base
+from db.config import Base
 
 
 ModelType = TypeVar("ModelType", bound=Base)

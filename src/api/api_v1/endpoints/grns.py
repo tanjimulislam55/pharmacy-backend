@@ -3,11 +3,11 @@ from datetime import datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.api.deps import get_current_active_user, get_db
-from src.schemas import GRNCreate, GRNOut
-from src.models import User
-from src.services import grn_service
-from src.utils.service_result import handle_result
+from api.deps import get_current_active_user, get_db
+from schemas import GRNCreate, GRNOut
+from models import User
+from services import grn_service
+from utils.service_result import handle_result
 
 router = APIRouter()
 

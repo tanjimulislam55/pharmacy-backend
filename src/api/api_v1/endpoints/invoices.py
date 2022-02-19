@@ -3,16 +3,16 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from src.api.deps import get_current_active_user, get_db
-from src.schemas import (
+from api.deps import get_current_active_user, get_db
+from schemas import (
     InvoiceOrderCreate,
     InvoiceOrderUpdate,
     InvoiceOrderLineCreate,
     InvoiceOrderOut,
 )
-from src.models import User
-from src.services import invoice_order_service
-from src.utils.service_result import handle_result
+from models import User
+from services import invoice_order_service
+from utils.service_result import handle_result
 
 router = APIRouter()
 

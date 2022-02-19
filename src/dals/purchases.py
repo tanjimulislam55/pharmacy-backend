@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
 from .base import BaseDAL
-from src.models import PurchaseOrder, PurchaseOrderLine
-from src.schemas import (
+from models import PurchaseOrder, PurchaseOrderLine
+from schemas import (
     PurchaseOrderCreate,
     PurchaseOrderLineCreate,
     PurchaseOrderUpdate,

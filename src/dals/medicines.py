@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from typing import Optional, List
 
 from .base import BaseDAL
-from src.models import Medicine, Stock
-from src.schemas import MedicineCreate, MedicineUpdate
+from models import Medicine, Stock
+from schemas import MedicineCreate, MedicineUpdate
 
 
 class MedicineDAL(BaseDAL[Medicine, MedicineCreate, MedicineUpdate]):

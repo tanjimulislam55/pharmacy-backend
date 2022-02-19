@@ -3,12 +3,12 @@ from fastapi import status
 from typing import Optional
 
 from .base import BaseService
-from src.dals import MedicineDAL
-from src.models import Medicine
-from src.schemas import MedicineCreate, MedicineUpdate, StockCreate
+from dals import MedicineDAL
+from models import Medicine
+from schemas import MedicineCreate, MedicineUpdate, StockCreate
 from .stocks import stock_service
-from src.utils.service_result import ServiceResult, handle_result
-from src.utils.app_exceptions import AppException
+from utils.service_result import ServiceResult, handle_result
+from utils.app_exceptions import AppException
 
 
 class MedicineService(BaseService[MedicineDAL, MedicineCreate, MedicineUpdate]):

@@ -2,11 +2,11 @@ from sqlalchemy.orm import Session
 from fastapi import status
 
 from .base import BaseService
-from src.dals import StockDAL
-from src.models import Stock
-from src.schemas import StockCreate, StockUpdate
-from src.utils.app_exceptions import AppException
-from src.utils.service_result import ServiceResult
+from dals import StockDAL
+from models import Stock
+from schemas import StockCreate, StockUpdate
+from utils.app_exceptions import AppException
+from utils.service_result import ServiceResult
 
 
 class StockService(BaseService[StockDAL, StockCreate, StockUpdate]):

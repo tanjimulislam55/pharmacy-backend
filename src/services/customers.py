@@ -1,7 +1,7 @@
 from .base import BaseService
-from src.dals import CustomerDAL
-from src.models import Customer
-from src.schemas import CustomerCreate, CustomerUpdate
+from dals import CustomerDAL
+from models import Customer
+from schemas import CustomerCreate, CustomerUpdate
 
 
 class CustomerService(BaseService[CustomerDAL, CustomerCreate, CustomerUpdate]):

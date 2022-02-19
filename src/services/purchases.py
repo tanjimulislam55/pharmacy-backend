@@ -3,17 +3,17 @@ from fastapi import status
 from typing import List
 
 from .base import BaseService
-from src.dals import PurchaseOrderDAL, PurchaseOrderLineDAL
-from src.models import PurchaseOrder, PurchaseOrderLine
-from src.schemas import (
+from dals import PurchaseOrderDAL, PurchaseOrderLineDAL
+from models import PurchaseOrder, PurchaseOrderLine
+from schemas import (
     PurchaseOrderCreate,
     PurchaseOrderUpdate,
     PurchaseOrderLineCreate,
     TradeUpdate,
 )
 from .manufacturers import trade_service
-from src.utils.service_result import ServiceResult
-from src.utils.app_exceptions import AppException
+from utils.service_result import ServiceResult
+from utils.app_exceptions import AppException
 
 
 class PurchaseOrderService(

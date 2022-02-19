@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from typing import Optional
 
 from .base import BaseDAL
-from src.models import Manufacturer, Trade, TradeHistory
-from src.schemas import (
+from models import Manufacturer, Trade, TradeHistory
+from schemas import (
     ManufacturerCreate,
     ManufacturerUpdate,
     TradeCreate,

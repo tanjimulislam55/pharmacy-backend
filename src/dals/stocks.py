@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from typing import Optional
 
 from .base import BaseDAL
-from src.models import Stock
-from src.schemas import StockCreate, StockUpdate
+from models import Stock
+from schemas import StockCreate, StockUpdate
 
 
 class StockDAL(BaseDAL[Stock, StockCreate, StockUpdate]):

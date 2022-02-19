@@ -13,7 +13,7 @@ from sqlalchemy import (
 )
 
 from .base import BaseModel
-from src.utils.enums import GenderEnum, BloodGroupEnum
+from utils.enums import GenderEnum, BloodGroupEnum
 
 # fmt: off
 

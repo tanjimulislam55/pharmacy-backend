@@ -1,7 +1,7 @@
 from typing import TypeVar
 from pydantic import BaseModel
-from src.db.config import Base
-from src.dals.base import BaseDAL
+from db.config import Base
+from dals.base import BaseDAL
 
 
 ModelType = TypeVar("ModelType", bound=Base)

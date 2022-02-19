@@ -2,9 +2,9 @@ from sqlalchemy.orm import Session
 from fastapi import status
 
 from .base import BaseService
-from src.dals import ManufacturerDAL, TradeDAL, TradeHistoryDAL
-from src.models import Manufacturer, Trade, TradeHistory
-from src.schemas import (
+from dals import ManufacturerDAL, TradeDAL, TradeHistoryDAL
+from models import Manufacturer, Trade, TradeHistory
+from schemas import (
     ManufacturerCreate,
     ManufacturerUpdate,
     TradeCreate,
@@ -12,8 +12,8 @@ from src.schemas import (
     TradeHistoryCreate,
     TradeHistoryUpdate,
 )
-from src.utils.app_exceptions import AppException
-from src.utils.service_result import ServiceResult
+from utils.app_exceptions import AppException
+from utils.service_result import ServiceResult
 
 
 class ManufacturerService(
