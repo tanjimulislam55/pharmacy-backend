@@ -6,3 +6,4 @@ from .purchases import PurchaseOrderDAL, PurchaseOrderLineDAL
 from .invoices import InvoiceOrderDAL, InvoiceOrderLineDAL
 from .customers import CustomerDAL
 from .grns import GRNDAL
+from .pharmacies import PharmacyDAL

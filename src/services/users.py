@@ -5,22 +5,45 @@ from fastapi import status
 from .base import BaseService
 from dals import UserDAL
 from models import User
-from schemas import UserCreate, UserUpdate, UserInDB
+from schemas import UserCreate, UserUpdate, UserInDB, PharmacyCreate
+from .pharmacies import pharmacy_service
 from utils.security import get_password_hash, verify_password
 from utils.service_result import ServiceResult
 from utils.app_exceptions import AppException
 
 
 class UserService(BaseService[UserDAL, UserCreate, UserUpdate]):
-    def create(self, db: Session, obj_in: UserCreate):
+    def create(
+        self, db: Session, obj_in: UserCreate, pharmacy_in: Optional[PharmacyCreate]
+    ):
         if self.dal(self.model).read_one_filtered_by_email(db, obj_in.email):
             return ServiceResult(AppException.BadRequest("This email is already taken"))
+        if self.dal(self.model).read_one_filtered_by_phone(db, obj_in.phone):
+            return ServiceResult(AppException.BadRequest("This phone is already taken"))
         db_obj = obj_in.dict(exclude={"password"})
         password = get_password_hash(obj_in.password)
         db_obj.update({"password": password, "is_active": False})
-        return super().create(
-            db, obj_in=UserInDB(**db_obj)
-        )  # after modify had to unwrap as dal works with object-type BaseModel
+        if pharmacy_in:
+            if pharmacy_service.get_one_by_trade_license(
+                db, trade_license=pharmacy_in.trade_license
+            ):
+                return ServiceResult(
+                    AppException.BadRequest("This trade license is already taken")
+                )
+            user = self.dal(self.model).create_without_commit_but_flush(
+                db, obj_in=UserInDB(**db_obj)
+            )
+            if pharmacy_service.create_along_with_user(
+                db, obj_in=pharmacy_in, user_id=user.id
+            ):
+                return ServiceResult(
+                    self.dal(self.model).just_commit_and_return_db_obj(db, db_obj=user),
+                    status_code=status.HTTP_201_CREATED,
+                )
+        else:
+            return super().create(
+                db, obj_in=UserInDB(**db_obj)
+            )  # after modify had to unwrap as dal works with object-type BaseModel
 
     def get_one_by_email(self, db: Session, email):
         data = self.dal(self.model).read_one_filtered_by_email(db, email)

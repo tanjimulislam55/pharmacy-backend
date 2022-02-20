@@ -2,6 +2,8 @@ from pydantic import BaseModel, EmailStr
 from pydantic.types import constr
 from typing import Optional
 
+from .pharmacies import PharmacyOut
+
 
 class UserBase(BaseModel):
     full_name: str
@@ -27,9 +29,11 @@ class UserUpdate(BaseModel):
 
 class UserOut(UserBase):
     id: int
+    pharmacy: Optional[PharmacyOut] = None
 
     class Config:
         orm_mode = True
+        # arbitrary_types_allowed = True
 
 
 class UserInDB(UserBase):

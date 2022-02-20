@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from api.deps import get_current_active_user, get_db
-from schemas import UserCreate, UserOut
+from schemas import UserCreate, UserOut, PharmacyCreate
 from models import User
 from services import user_service
 from utils.service_result import handle_result
@@ -12,8 +12,12 @@ router = APIRouter()
 
 
 @router.post("/new", response_model=UserOut)
-def create_user(user_in: UserCreate, db: Session = Depends(get_db)):
-    user = user_service.create(db, obj_in=user_in)
+def create_user(
+    user_in: UserCreate,
+    pharmacy_in: Optional[PharmacyCreate] = None,
+    db: Session = Depends(get_db),
+):
+    user = user_service.create(db, obj_in=user_in, pharmacy_in=pharmacy_in)
     return handle_result(user)
 
 

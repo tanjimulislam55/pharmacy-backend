@@ -20,52 +20,53 @@ from utils.enums import GenderEnum, BloodGroupEnum
 
 class Role(BaseModel):
     __tablename__ = "roles"
+
     name = Column(String(50), nullable=False, unique=True)
+
+    users = relationship("User", back_populates="role")
 
 
 class User(BaseModel):
     __tablename__ = "users"
+
     full_name = Column(String(50), nullable=False)
     email = Column(String(100), nullable=False, unique=True, index=True)
     phone = Column(String(14), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=False)
+    role_id = Column(Integer, ForeignKey("roles.id"))
 
-    address = relationship("Address", uselist=False, back_populates="user")
+    role = relationship("Role", back_populates="users")
+    pharmacy = relationship("Pharmacy", uselist=False, back_populates="user")
     invoices = relationship("InvoiceOrder", back_populates="user")
     purchases = relationship("PurchaseOrder", back_populates="user")
+
+
+class Pharmacy(BaseModel):
+    __tablename__ = "pharmacies"
+
+    name = Column(String(100), nullable=False)
+    trade_license = Column(String(50), nullable=False, unique=True)
+    area = Column(String(100), nullable=False)
+    sub_district = Column(String(50), nullable=False)
+    district = Column(String(50), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+
+    user = relationship("User", back_populates="pharmacy")
 
 
 class Customer(BaseModel):
     __tablename__ = "customers"
 
     full_name = Column(String(100), nullable=False)
-    email = Column(String(100), nullable=True, unique=True)
     phone = Column(String(14), nullable=False, unique=True, index=True)
+    email = Column(String(100), nullable=True, unique=True)
     gender = Column(Enum(GenderEnum), nullable=False)
     bloodgroup = Column(Enum(BloodGroupEnum), nullable=True)
     birthdate = Column(Date, nullable=True)
+    location = Column(String(225), nullable=True)
 
-    address = relationship("Address", uselist=False, back_populates="customer")
     invoices = relationship("InvoiceOrder", back_populates="customer")
-
-
-class Address(BaseModel):
-    __tablename__ = "addresses"
-
-    flat = Column(String(10), nullable=True)
-    house = Column(String(10), nullable=True)
-    road = Column(String(10), nullable=True)
-    block = Column(String(10), nullable=True)
-    area = Column(String(30), nullable=True)
-    city = Column(String(20), nullable=True)
-    postal_code = Column(String(10), nullable=True)
-    country = Column(String(30), nullable=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
-    customer_id = Column(Integer, ForeignKey("customers.id", ondelete="CASCADE"), nullable=True) # noqa E501
-
-    user = relationship("User", back_populates="address")
-    customer = relationship("Customer", back_populates="address")
 
 
 class Manufacturer(BaseModel):
@@ -86,7 +87,7 @@ class Trade(BaseModel):
     closing_balance = Column(Float, nullable=True, default=0)
     outstanding_amount = Column(Float, nullable=True, default=0)
     overdue_amount = Column(Float, nullable=True, default=0)
-    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="CASCADE")) # noqa E501
+    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="CASCADE"))
 
     manufacturer = relationship("Manufacturer", back_populates="trade")
 
@@ -95,7 +96,7 @@ class TradeHistory(BaseModel):
     __tablename__ = "trade_histories"
 
     purchased_amount = Column(Float, nullable=True, default=0)
-    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="CASCADE")) # noqa E501
+    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="CASCADE"))
 
     manufacturer = relationship("Manufacturer", back_populates="trade_histories")
 
@@ -140,7 +141,7 @@ class InvoiceOrder(BaseModel):
     comment = Column(Text, nullable=True)
     discount = Column(Integer, nullable=True, default=0)
     vat = Column(Integer, nullable=True, default=0)
-    customer_id = Column(Integer, ForeignKey("customers.id", ondelete="SET NULL"), nullable=True) # noqa E501
+    customer_id = Column(Integer, ForeignKey("customers.id", ondelete="SET NULL"), nullable=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
 
     invoice_lines = relationship("InvoiceOrderLine", back_populates="invoice")
@@ -170,7 +171,7 @@ class PurchaseOrder(BaseModel):
     due_amount = Column(Float, nullable=False)
     note = Column(Text, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
-    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="SET NULL")) # noqa E501
+    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="SET NULL"))
 
     purchase_lines = relationship("PurchaseOrderLine", back_populates="purchase")
     user = relationship("User", back_populates="purchases")
@@ -199,8 +200,8 @@ class GRN(BaseModel):
     cost = Column(Float, nullable=False)
     expiry_date = Column(Date, nullable=True)
     medicine_id = Column(Integer, ForeignKey("medicines.id", ondelete="SET NULL"))
-    purchase_id = Column(Integer, ForeignKey("purchase_orders.id", ondelete="CASCADE")) # noqa E501
-    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="SET NULL")) # noqa E501
+    purchase_id = Column(Integer, ForeignKey("purchase_orders.id", ondelete="CASCADE"))
+    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="SET NULL"))
 
     purchase_order = relationship("PurchaseOrder", back_populates="grns")
     medicine = relationship("Medicine", back_populates="grns")

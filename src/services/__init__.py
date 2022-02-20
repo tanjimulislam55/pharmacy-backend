@@ -6,3 +6,4 @@ from .purchases import purchase_order_service, purchase_order_line_service
 from .invoices import invoice_order_service, invoice_order_line_service
 from .customers import customer_service
 from .grns import grn_service
+from .pharmacies import pharmacy_service
