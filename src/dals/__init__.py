@@ -7,3 +7,4 @@ from .invoices import InvoiceOrderDAL, InvoiceOrderLineDAL
 from .customers import CustomerDAL
 from .grns import GRNDAL
 from .pharmacies import PharmacyDAL
+from .roles import RoleDAL
