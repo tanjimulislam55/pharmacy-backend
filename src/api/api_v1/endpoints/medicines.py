@@ -2,7 +2,8 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from api.deps import get_current_active_user, get_db
+from api.deps import get_current_active_user
+from db.config import get_db
 from schemas import MedicineCreate, MedicineOut, MedicineUpdate, MedicineJoinStock
 from models import User
 from services import medicine_service
@@ -17,7 +18,9 @@ def create_medicine(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    medicine = medicine_service.create_along_with_stock(db, obj_in=medicine_in)
+    medicine = medicine_service.create(
+        db, handle_result(current_user), obj_in=medicine_in
+    )
     return handle_result(medicine)
 
 
@@ -37,7 +40,9 @@ def get_all_medicines_joined_with_stocks(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    medicines = medicine_service.get_many_join_with_stock(db)
+    medicines = medicine_service.get_many_join_with_stock(
+        db, handle_result(current_user)
+    )
     return handle_result(medicines)
 
 
@@ -45,7 +50,9 @@ def get_all_medicines_joined_with_stocks(
 def get_medicine_costs_of_stock(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
 ):
-    value = medicine_service.calculate_total_stock_costs(db)
+    value = medicine_service.calculate_total_stock_costs(
+        db, handle_result(current_user)
+    )
     return {"value": handle_result(value)}
 
 

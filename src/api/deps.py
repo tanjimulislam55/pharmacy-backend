@@ -1,4 +1,3 @@
-from typing import Generator
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -9,7 +8,7 @@ from schemas import TokenPayload
 from models import User
 from services.users import user_service
 from core.config import settings
-from db.config import SessionLocal
+from db.config import get_db
 from utils.service_result import ServiceResult, handle_result
 from utils.app_exceptions import AppException
 
@@ -17,14 +16,6 @@ from utils.app_exceptions import AppException
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
 )
-
-
-def get_db() -> Generator:
-    try:
-        db = SessionLocal()
-        yield db
-    finally:
-        db.close()
 
 
 def get_current_user(

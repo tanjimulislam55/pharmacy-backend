@@ -53,6 +53,12 @@ class Pharmacy(BaseModel):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     user = relationship("User", back_populates="pharmacy")
+    invoice_orders = relationship("InvoiceOrder", back_populates="pharmacy")
+    purchase_orders = relationship("PurchaseOrder", back_populates="pharmacy")
+    grns = relationship("GRN", back_populates="pharmacy")
+    stocks = relationship("Stock", back_populates="pharmacy")
+    trades = relationship("Trade", back_populates="pharmacy")
+    trade_histories = relationship("TradeHistory", back_populates="pharmacy")
 
 
 class Customer(BaseModel):
@@ -65,6 +71,7 @@ class Customer(BaseModel):
     bloodgroup = Column(Enum(BloodGroupEnum), nullable=True)
     birthdate = Column(Date, nullable=True)
     location = Column(String(225), nullable=True)
+    pharmacy_id = Column(Integer, ForeignKey("pharmacies.id", ondelete="CASCADE"))
 
     invoices = relationship("InvoiceOrder", back_populates="customer")
 
@@ -88,8 +95,10 @@ class Trade(BaseModel):
     outstanding_amount = Column(Float, nullable=True, default=0)
     overdue_amount = Column(Float, nullable=True, default=0)
     manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="CASCADE"))
+    pharmacy_id = Column(Integer, ForeignKey("pharmacies.id", ondelete="CASCADE"))
 
     manufacturer = relationship("Manufacturer", back_populates="trade")
+    pharmacy = relationship("Pharmacy", back_populates="trades")
 
 
 class TradeHistory(BaseModel):
@@ -97,8 +106,10 @@ class TradeHistory(BaseModel):
 
     purchased_amount = Column(Float, nullable=True, default=0)
     manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="CASCADE"))
+    pharmacy_id = Column(Integer, ForeignKey("pharmacies.id", ondelete="CASCADE"))
 
     manufacturer = relationship("Manufacturer", back_populates="trade_histories")
+    pharmacy = relationship("Pharmacy", back_populates="trade_histories")
 
 
 class Medicine(BaseModel):
@@ -110,9 +121,9 @@ class Medicine(BaseModel):
     strength = Column(String(255), nullable=True)
     unit_price = Column(Float, nullable=True)
     depo_price = Column(Float, nullable=True)
-    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="CASCADE")) # noqa E501
+    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="CASCADE"))
 
-    manufacturer = relationship("Manufacturer", uselist=False, back_populates="medicine") # noqa E501
+    manufacturer = relationship("Manufacturer", uselist=False, back_populates="medicine")
     stock = relationship("Stock", back_populates="medicine")
     invoice_lines = relationship("InvoiceOrderLine", back_populates="medicine")
     purchase_lines = relationship("PurchaseOrderLine", back_populates="medicine")
@@ -126,10 +137,11 @@ class Stock(BaseModel):
     critical_stock = Column(Integer, nullable=True, default=0)
     last_date_of_purchase = Column(DateTime, nullable=True)
     last_purchased_quantity = Column(Integer, nullable=True, default=0)
-    gross_margin = Column(Float, nullable=True)
     medicine_id = Column(Integer, ForeignKey("medicines.id", ondelete="CASCADE"))
+    pharmacy_id = Column(Integer, ForeignKey("pharmacies.id", ondelete="CASCADE"))
 
     medicine = relationship("Medicine", back_populates="stock")
+    pharmacy = relationship("Pharmacy", back_populates="stocks")
 
 
 class InvoiceOrder(BaseModel):
@@ -143,10 +155,12 @@ class InvoiceOrder(BaseModel):
     vat = Column(Integer, nullable=True, default=0)
     customer_id = Column(Integer, ForeignKey("customers.id", ondelete="SET NULL"), nullable=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    pharmacy_id = Column(Integer, ForeignKey("pharmacies.id", ondelete="CASCADE"))
 
     invoice_lines = relationship("InvoiceOrderLine", back_populates="invoice")
     user = relationship("User", back_populates="invoices")
     customer = relationship("Customer", back_populates="invoices")
+    pharmacy = relationship("Pharmacy", back_populates="invoice_orders")
 
 
 class InvoiceOrderLine(BaseModel):
@@ -172,11 +186,13 @@ class PurchaseOrder(BaseModel):
     note = Column(Text, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="SET NULL"))
+    pharmacy_id = Column(Integer, ForeignKey("pharmacies.id", ondelete="CASCADE"))
 
     purchase_lines = relationship("PurchaseOrderLine", back_populates="purchase")
     user = relationship("User", back_populates="purchases")
     grns = relationship("GRN", back_populates="purchase_order")
     manufacturer = relationship("Manufacturer", back_populates="purchase_orders")
+    pharmacy = relationship("Pharmacy", back_populates="purchase_orders")
 
 
 class PurchaseOrderLine(BaseModel):
@@ -202,7 +218,9 @@ class GRN(BaseModel):
     medicine_id = Column(Integer, ForeignKey("medicines.id", ondelete="SET NULL"))
     purchase_id = Column(Integer, ForeignKey("purchase_orders.id", ondelete="CASCADE"))
     manufacturer_id = Column(Integer, ForeignKey("manufacturers.id", ondelete="SET NULL"))
+    pharmacy_id = Column(Integer, ForeignKey("pharmacies.id", ondelete="CASCADE"))
 
     purchase_order = relationship("PurchaseOrder", back_populates="grns")
     medicine = relationship("Medicine", back_populates="grns")
     manufacturer = relationship("Manufacturer", back_populates="grns")
+    pharmacy = relationship("Pharmacy", back_populates="grns")

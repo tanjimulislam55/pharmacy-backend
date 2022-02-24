@@ -2,7 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from api.deps import get_current_active_user, get_db
+from api.deps import get_current_active_user
+from db.config import get_db
 from schemas import StockUpdate, StockOut
 from models import User
 from services import stock_service
@@ -18,7 +19,9 @@ def get_all_stocks(
     skip: int = 0,
     limit: int = 10,
 ):
-    stocks = stock_service.get_many(db, skip=skip, limit=limit)
+    stocks = stock_service.get_many(
+        db, handle_result(current_user), skip=skip, limit=limit
+    )
     return handle_result(stocks)
 
 
@@ -27,7 +30,9 @@ def get_total_medicine_quantity_in_stock(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    value = stock_service.get_sum_of_in_stock_values_filtered_by_datetime(db)
+    value = stock_service.get_sum_of_in_stock_values_filtered_by_datetime(
+        db, handle_result(current_user)
+    )
     return {"value": handle_result(value)}
 
 
@@ -38,5 +43,7 @@ def update_stock_by_id(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    stock = stock_service.update_by_id(db, id=stock_id, obj_in=stock_update)
+    stock = stock_service.update_by_id(
+        db, handle_result(current_user), id=stock_id, obj_in=stock_update
+    )
     return handle_result(stock)

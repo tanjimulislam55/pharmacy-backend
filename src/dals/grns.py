@@ -13,12 +13,16 @@ class GRNDAL(BaseDAL[GRN, GRNCreate, GRNUpdate]):
         db: Session,
         from_datetime: Optional[datetime],
         till_datetime: Optional[datetime],
+        pharmacy_id: int,
         skip: int = 0,
         limit: int = 10,
     ) -> List[GRN]:
         return (
             db.query(self.model)
-            .filter(self.model.expiry_date.between(from_datetime, till_datetime))
+            .filter(
+                self.model.pharmacy_id == pharmacy_id,
+                self.model.expiry_date.between(from_datetime, till_datetime),
+            )
             .offset(skip)
             .limit(limit)
             .all()

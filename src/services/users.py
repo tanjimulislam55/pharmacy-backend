@@ -7,8 +7,9 @@ from dals import UserDAL
 from models import User
 from schemas import UserCreate, UserUpdate, UserInDB, PharmacyCreate
 from .pharmacies import pharmacy_service
+from .roles import role_service
 from utils.security import get_password_hash, verify_password
-from utils.service_result import ServiceResult
+from utils.service_result import ServiceResult, handle_result
 from utils.app_exceptions import AppException
 
 
@@ -61,6 +62,16 @@ class UserService(BaseService[UserDAL, UserCreate, UserUpdate]):
             )
         return ServiceResult(data, status_code=status.HTTP_200_OK)
 
+    def get_one_by_id(self, db: Session, id: int):
+        data = self.dal(self.model).read_one_filtered_by_id(db, id)
+        if not data:
+            return ServiceResult(
+                AppException.NotFound(
+                    f"No {self.model.__name__.lower()} found with this id: {id}"
+                )
+            )
+        return ServiceResult(data, status_code=status.HTTP_200_OK)
+
     def update_by_id(self, db: Session, obj_in: UserUpdate):
         db_obj = obj_in.dict(exclude_unset=True)
         if obj_in["password"]:
@@ -78,6 +89,18 @@ class UserService(BaseService[UserDAL, UserCreate, UserUpdate]):
         if not verify_password(password, user.password):
             return None
         return user
+
+    def activate_user(self, db: Session, current_user: User, id: int):
+        """checking superuser"""
+        role = role_service.get_one_by_id(db, id=current_user.role_id)
+        if (handle_result(role).name) != "superuser":
+            return ServiceResult(
+                AppException.CredentialsException("Not permittable for pharmacy user")
+            )
+        user = self.dal(self.model).update_one_filtered_by_id_to_activate_user(db, id)
+        if not user:
+            return ServiceResult(AppException.NotAccepted())
+        return ServiceResult(user, status_code=status.HTTP_202_ACCEPTED)
 
 
 user_service = UserService(UserDAL, User)

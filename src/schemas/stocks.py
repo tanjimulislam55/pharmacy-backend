@@ -8,7 +8,6 @@ class StockCreate(BaseModel):
     critical_stock: Optional[int] = 0
     last_date_of_purchase: Optional[datetime]
     last_purchased_quantity: Optional[int] = 0
-    gross_margin: Optional[float]
     medicine_id: int
 
 
@@ -24,4 +23,3 @@ class StockUpdate(BaseModel):
     critical_stock: Optional[int]
     last_date_of_purchase: Optional[datetime]
     last_purchased_quantity: Optional[int]
-    gross_margin: Optional[float]

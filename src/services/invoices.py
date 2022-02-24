@@ -6,7 +6,7 @@ from datetime import datetime
 from .base import BaseService
 from .stocks import stock_service
 from dals import InvoiceOrderDAL, InvoiceOrderLineDAL
-from models import InvoiceOrder, InvoiceOrderLine
+from models import InvoiceOrder, InvoiceOrderLine, User
 from schemas import (
     InvoiceOrderCreate,
     InvoiceOrderUpdate,
@@ -22,6 +22,7 @@ class InvoiceOrderService(
     def create_along_with_invoice_lines(
         self,
         db: Session,
+        current_user: User,
         obj_in_for_invoice_order: InvoiceOrderCreate,
         obj_in_for_invoice_order_lines: List[InvoiceOrderLineCreate],
     ):
@@ -29,6 +30,7 @@ class InvoiceOrderService(
         for every_invoice_order_line in obj_in_for_invoice_order_lines:
             available_quantity = stock_service.available_quantity(
                 db,
+                current_user,
                 id=every_invoice_order_line.medicine_id,
                 quantity=every_invoice_order_line.quantity,
             )
@@ -36,7 +38,7 @@ class InvoiceOrderService(
                 return ServiceResult(AppException.NotAccepted("Not enough stock"))
 
         invoice_order = self.dal(self.model).create_without_commit_but_flush(
-            db, obj_in_for_invoice_order
+            db, obj_in=obj_in_for_invoice_order, pharmacy_id=current_user.pharmacy.id
         )
         if not invoice_order:
             return ServiceResult(
@@ -44,6 +46,7 @@ class InvoiceOrderService(
             )
         if invoice_order_line_service.create_along_with_invoice_order(
             db,
+            current_user,
             obj_in=obj_in_for_invoice_order_lines,
             invoice_order_id=invoice_order.id,
         ):
@@ -59,11 +62,17 @@ class InvoiceOrderService(
     def get_sum_of_values_for_specific_column_filtered_by_datetime(
         self,
         db: Session,
+        current_user: User,
         from_datetime: Optional[datetime],
         till_datetime: Optional[datetime],
     ) -> float:
         data = self.dal(self.model).read_many_offset_limit_filtered_by_datetime(
-            db, from_datetime, till_datetime, skip=0, limit=99999
+            db,
+            from_datetime,
+            till_datetime,
+            skip=0,
+            limit=99999,
+            pharmacy_id=current_user.pharmacy.id,
         )
         sum_t: float = 0
         sum_d: float = 0
@@ -91,7 +100,11 @@ class InvoiceOrderLineService(
     BaseService[InvoiceOrderLineDAL, InvoiceOrderLineCreate, None]
 ):
     def create_along_with_invoice_order(
-        self, db: Session, obj_in: List[InvoiceOrderLineCreate], invoice_order_id: int
+        self,
+        db: Session,
+        current_user: User,
+        obj_in: List[InvoiceOrderLineCreate],
+        invoice_order_id: int,
     ) -> bool:
         for every_invoice_order_line in obj_in:
             invoice_order_line = self.dal(self.model).create_without_commit_but_flush(
@@ -109,6 +122,7 @@ class InvoiceOrderLineService(
             """also decreasing stock quantity"""
             stock_service.decrease_stock_quantity_filtered_by_medicine_id_without_commit(  # noqa E501
                 db,
+                current_user,
                 medicine_id=every_invoice_order_line.medicine_id,
                 quantity=every_invoice_order_line.quantity,
             )

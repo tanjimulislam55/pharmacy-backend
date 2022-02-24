@@ -2,7 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from api.deps import get_current_active_user, get_db
+from api.deps import get_current_active_user
+from db.config import get_db
 from schemas import ManufacturerCreate, ManufacturerOut
 from models import User
 from services import manufacturer_service
@@ -17,8 +18,8 @@ def create_manufacturer(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    manufacturer = manufacturer_service.create_along_with_trade(
-        db, obj_in=manufacturer_in
+    manufacturer = manufacturer_service.create(
+        db, handle_result(current_user), obj_in=manufacturer_in
     )
     return handle_result(manufacturer)
 

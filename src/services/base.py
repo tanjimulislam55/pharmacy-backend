@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from db.config import Base
+from models import User
 from dals.base import BaseDAL
 from utils.app_exceptions import AppException
 from utils.service_result import ServiceResult
@@ -21,14 +22,18 @@ class BaseService(Generic[ModelDAL, CreateSchemaType, UpdateSchemaType]):
         self.dal = dal
         self.model = model
 
-    def create(self, db: Session, obj_in: CreateSchemaType):
-        data = self.dal(self.model).create_with_commit(db, obj_in)
+    def create(self, db: Session, current_user: User, obj_in: CreateSchemaType):
+        data = self.dal(self.model).create_with_commit(
+            db, obj_in=obj_in, pharmacy_id=current_user.pharmacy.id
+        )
         if not data:
             return ServiceResult(AppException.ServerError("Something went wrong"))
         return ServiceResult(data, status_code=status.HTTP_201_CREATED)
 
-    def get_one_by_id(self, db: Session, id: int):
-        data = self.dal(self.model).read_one_filtered_by_id(db, id)
+    def get_one_by_id(self, db: Session, current_user: User, id: int):
+        data = self.dal(self.model).read_one_filtered_by_id(
+            db, id, pharmacy_id=current_user.pharmacy.id
+        )
         if not data:
             return ServiceResult(
                 AppException.NotFound(
@@ -37,8 +42,13 @@ class BaseService(Generic[ModelDAL, CreateSchemaType, UpdateSchemaType]):
             )
         return ServiceResult(data, status_code=status.HTTP_200_OK)
 
-    def get_many(self, db: Session, skip: int = 0, limit: int = 10):
-        data = self.dal(self.model).read_many_offset_limit(db, skip=skip, limit=limit)
+    def get_many(self, db: Session, current_user: User, skip: int = 0, limit: int = 10):
+        data = self.dal(self.model).read_many_offset_limit(
+            db,
+            pharmacy_id=current_user.pharmacy.id,
+            skip=skip,
+            limit=limit,
+        )
         if not data:
             return ServiceResult(
                 AppException.NotFound(f"No {self.model.__name__.lower()}s found")
@@ -48,13 +58,19 @@ class BaseService(Generic[ModelDAL, CreateSchemaType, UpdateSchemaType]):
     def get_many_filtered_by_datetime(
         self,
         db: Session,
+        current_user: User,
         from_datetime: Optional[datetime],
         till_datetime: Optional[datetime],
         skip: int = 0,
         limit: int = 10,
     ):
         data = self.dal(self.model).read_many_offset_limit_filtered_by_datetime(
-            db, from_datetime, till_datetime, skip, limit
+            db,
+            from_datetime,
+            till_datetime,
+            pharmacy_id=current_user.pharmacy.id,
+            skip=skip,
+            limit=limit,
         )
         if not data:
             return ServiceResult(
@@ -62,13 +78,21 @@ class BaseService(Generic[ModelDAL, CreateSchemaType, UpdateSchemaType]):
             )
         return ServiceResult(data, status_code=status.HTTP_200_OK)
 
-    def update_by_id(self, db: Session, id: int, obj_in: UpdateSchemaType):
-        data = self.dal(self.model).update_one_filtered_by_id(db, id, obj_in)
+    def update_by_id(
+        self, db: Session, current_user: User, id: int, obj_in: UpdateSchemaType
+    ):
+        data = self.dal(self.model).update_one_filtered_by_id(
+            db, id, obj_in, pharmacy_id=current_user.pharmacy.id
+        )
         if not data:
             return ServiceResult(AppException.NotAccepted())
         return ServiceResult(data, status_code=status.HTTP_202_ACCEPTED)
 
-    def remove_by_id(self, db: Session, id: int):
+    def remove_by_id(self, db: Session, current_user: User, id: int):
         ServiceResult("Deleted", status_code=status.HTTP_202_ACCEPTED) if self.dal(
             self.model
-        ).delete_one_filtered_by_id(db, id) else ServiceResult(AppException.Forbidden())
+        ).delete_one_filtered_by_id(
+            db, id, pharmacy_id=current_user.pharmacy.id
+        ) else ServiceResult(
+            AppException.Forbidden()
+        )

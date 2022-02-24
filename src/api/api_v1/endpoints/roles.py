@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from schemas import Role, RoleCreate, RoleUpdate
-from api.deps import get_db, get_current_active_user
+from api.deps import get_current_active_user
+from db.config import get_db
 from models import User
 from services import role_service
 from utils.service_result import handle_result

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
 
 from .base import BaseDAL
 from models import Manufacturer, Trade, TradeHistory
@@ -14,26 +14,47 @@ from schemas import (
 
 
 class ManufacturerDAL(BaseDAL[Manufacturer, ManufacturerCreate, ManufacturerUpdate]):
+    def create_with_commit(
+        self, db: Session, obj_in: ManufacturerCreate
+    ) -> Manufacturer:
+        db_obj = self.model(**obj_in.dict())
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
     def read_one_filtered_by_manufacturer_name(
         self, db: Session, manufacturer_name: str
     ) -> Optional[Manufacturer]:
         return db.query(self.model).filter(self.model.name == manufacturer_name).first()
 
+    def read_many_offset_limit(
+        self, db: Session, skip: int = 0, limit: int = 100
+    ) -> List[Manufacturer]:
+        return db.query(self.model).offset(skip).limit(limit).all()
+
+    def read_one_filtered_by_id(self, db: Session, id: int) -> Optional[Manufacturer]:
+        return db.query(self.model).filter(self.model.id == id).first()
+
 
 class TradeDAL(BaseDAL[Trade, TradeCreate, TradeUpdate]):
-    def create_without_commit_but_flush(
-        self, db: Session, obj_in: TradeCreate, manufacturer_id: int
+    def create_with_commit(
+        self, db: Session, obj_in: TradeCreate, manufacturer_id: int, pharmacy_id: int
     ) -> Trade:
-        db_obj = self.model(**obj_in.dict(), manufacturer_id=manufacturer_id)
+        db_obj = self.model(
+            **obj_in.dict(), manufacturer_id=manufacturer_id, pharmacy_id=pharmacy_id
+        )
         db.add(db_obj)
-        db.flush()
+        db.commit()
+        db.refresh(db_obj)
         return db_obj
 
     def update_one_filtered_by_manufacturer_id_without_commit(
-        self, db: Session, obj_in: TradeUpdate, manufacturer_id: int
+        self, db: Session, obj_in: TradeUpdate, manufacturer_id: int, pharmacy_id: int
     ) -> Trade:
         db.query(self.model).filter(
-            self.model.manufacturer_id == manufacturer_id
+            self.model.manufacturer_id == manufacturer_id,
+            self.model.pharmacy_id == pharmacy_id,
         ).update(
             {
                 self.model.closing_balance: self.model.closing_balance
@@ -45,20 +66,29 @@ class TradeDAL(BaseDAL[Trade, TradeCreate, TradeUpdate]):
         )
 
     def read_one_filtered_by_manufacturer_id(
-        self, db: Session, manufacturer_id: int
+        self, db: Session, manufacturer_id: int, pharmacy_id: int
     ) -> Optional[Trade]:
         return (
             db.query(self.model)
-            .filter(self.model.manufacturer_id == manufacturer_id)
+            .filter(
+                self.model.manufacturer_id == manufacturer_id,
+                self.model.pharmacy_id == pharmacy_id,
+            )
             .first()
         )
 
 
 class TradeHistoryDAL(BaseDAL[TradeHistory, TradeHistoryCreate, TradeHistoryUpdate]):
     def create_with_commit(
-        self, db: Session, obj_in: TradeHistoryCreate, manufacturer_id: int
+        self,
+        db: Session,
+        obj_in: TradeHistoryCreate,
+        manufacturer_id: int,
+        pharmacy_id: int,
     ) -> Trade:
-        db_obj = self.model(**obj_in.dict(), manufacturer_id=manufacturer_id)
+        db_obj = self.model(
+            **obj_in.dict(), manufacturer_id=manufacturer_id, pharmacy_id=pharmacy_id
+        )
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

@@ -3,7 +3,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from api.deps import get_current_active_user, get_db
+from api.deps import get_current_active_user
+from db.config import get_db
 from schemas import GRNCreate, GRNOut
 from models import User
 from services import grn_service
@@ -18,7 +19,7 @@ def create_grns(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    grns = grn_service.create(db, obj_in=grn_in)
+    grns = grn_service.create(db, handle_result(current_user), obj_in=grn_in)
     return [handle_result(grn) for grn in grns]
 
 
@@ -29,7 +30,7 @@ def get_all_grns(
     skip: int = 0,
     limit: int = 10,
 ):
-    grns = grn_service.get_many(db, skip=skip, limit=limit)
+    grns = grn_service.get_many(db, handle_result(current_user), skip=skip, limit=limit)
     return handle_result(grns)
 
 
@@ -46,6 +47,7 @@ def get_all_grns_filtered_by_expiry_date(
 ):
     grns = grn_service.get_many_filtered_by_expiry_date(
         db,
+        handle_result(current_user),
         from_datetime=from_datetime,
         till_datetime=till_datetime,
         skip=skip,
@@ -63,8 +65,9 @@ def get_sum_filtered_by_datetime(
     ),
     till_datetime: Optional[datetime] = str(datetime.now()),
 ):
-    value = grn_service.get_sum_of_values_for_specific_column_filtered_by_datetime(  # noqa E501
+    value = grn_service.get_sum_of_values_for_specific_column_filtered_by_datetime(
         db,
+        handle_result(current_user),
         from_datetime=from_datetime,
         till_datetime=till_datetime,
     )
@@ -80,8 +83,9 @@ def get_sum_filtered_by_expiry_date(
     ),
     till_datetime: Optional[datetime] = str(datetime.now()),
 ):
-    value = grn_service.get_sum_of_values_for_specific_column_filtered_by_expiry_date(  # noqa E501
+    value = grn_service.get_sum_of_values_for_specific_column_filtered_by_expiry_date(
         db,
+        handle_result(current_user),
         from_datetime=from_datetime,
         till_datetime=till_datetime,
     )

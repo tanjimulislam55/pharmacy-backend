@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from api.deps import get_current_active_user, get_db
+from api.deps import get_current_active_user
+from db.config import get_db
 from schemas import (
     InvoiceOrderCreate,
     InvoiceOrderUpdate,
@@ -26,6 +27,7 @@ def create_new_invoice_order(
 ):
     invoice_order = invoice_order_service.create_along_with_invoice_lines(
         db,
+        handle_result(current_user),
         obj_in_for_invoice_order=invoice_order_in,
         obj_in_for_invoice_order_lines=invoice_order_line_in,
     )
@@ -39,7 +41,9 @@ def get_all_invoice_orders(
     skip: int = 0,
     limit: int = 10,
 ):
-    invoice_orders = invoice_order_service.get_many(db, skip=skip, limit=limit)
+    invoice_orders = invoice_order_service.get_many(
+        db, handle_result(current_user), skip=skip, limit=limit
+    )
     return handle_result(invoice_orders)
 
 
@@ -56,6 +60,7 @@ def get_all_invoice_orders_filtered_by_datetime(
 ):
     invoice_orders = invoice_order_service.get_many_filtered_by_datetime(
         db,
+        handle_result(current_user),
         from_datetime=from_datetime,
         till_datetime=till_datetime,
         skip=skip,
@@ -73,8 +78,9 @@ def get_sum_filtered_by_datetime(
     ),
     till_datetime: Optional[datetime] = str(datetime.now()),
 ):
-    value = invoice_order_service.get_sum_of_values_for_specific_column_filtered_by_datetime(  # noqa E501
+    value = invoice_order_service.get_sum_of_values_for_specific_column_filtered_by_datetime(
         db,
+        handle_result(current_user),
         from_datetime=from_datetime,
         till_datetime=till_datetime,
     )
@@ -89,6 +95,9 @@ def update_invoice_order_by_id(
     current_user: User = Depends(get_current_active_user),
 ):
     invoice_order = invoice_order_service.update_by_id(
-        db, id=invoice_order_id, obj_in=invoice_order_update
+        db,
+        handle_result(current_user),
+        id=invoice_order_id,
+        obj_in=invoice_order_update,
     )
     return handle_result(invoice_order)

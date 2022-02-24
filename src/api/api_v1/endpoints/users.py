@@ -2,7 +2,8 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from api.deps import get_current_active_user, get_db
+from api.deps import get_current_active_user
+from db.config import get_db
 from schemas import UserCreate, UserOut, PharmacyCreate
 from models import User
 from services import user_service
@@ -46,4 +47,14 @@ def get_user_by_id(
     current_user: User = Depends(get_current_active_user),
 ):
     user = user_service.get_one_by_id(db, id=user_id)
+    return handle_result(user)
+
+
+@router.put("/active/{user_id}", response_model=UserOut)
+def active_a_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    user = user_service.activate_user(db, handle_result(current_user), id=user_id)
     return handle_result(user)

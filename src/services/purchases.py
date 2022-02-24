@@ -4,7 +4,7 @@ from typing import List
 
 from .base import BaseService
 from dals import PurchaseOrderDAL, PurchaseOrderLineDAL
-from models import PurchaseOrder, PurchaseOrderLine
+from models import PurchaseOrder, PurchaseOrderLine, User
 from schemas import (
     PurchaseOrderCreate,
     PurchaseOrderUpdate,
@@ -22,11 +22,22 @@ class PurchaseOrderService(
     def create_along_with_purchase_lines(
         self,
         db: Session,
+        current_user: User,
         obj_in_for_purchase_order: PurchaseOrderCreate,
         obj_in_for_purchase_order_lines: List[PurchaseOrderLineCreate],
     ):
+        """check if trade exists by pharmacy id. if not then create trade"""
+        existing_trade = trade_service.get_one_by_pharmacy_id(
+            db, current_user, manufacturer_id=obj_in_for_purchase_order.manufacturer_id
+        )
+        if not existing_trade:
+            trade_service.create(
+                db,
+                current_user,
+                manufacturer_id=obj_in_for_purchase_order.manufacturer_id,
+            )
         purchase_order = self.dal(self.model).create_without_commit_but_flush(
-            db, obj_in_for_purchase_order
+            db, obj_in=obj_in_for_purchase_order, pharmacy_id=current_user.pharmacy.id
         )
         if not purchase_order:
             return ServiceResult(
@@ -40,6 +51,7 @@ class PurchaseOrderService(
             """also updating trade"""
             trade_service.update_by_manufacturer_id_while_processing_purchase_order(
                 db,
+                current_user,
                 manufacturer_id=purchase_order.manufacturer_id,
                 obj_in=TradeUpdate(
                     closing_balance=purchase_order.paid_amount,

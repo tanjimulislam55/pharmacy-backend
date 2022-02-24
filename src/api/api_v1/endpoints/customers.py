@@ -2,7 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from api.deps import get_current_active_user, get_db
+from api.deps import get_current_active_user
+from db.config import get_db
 from schemas import CustomerCreate, CustomerUpdate, CustomerOut
 from models import User
 from services import customer_service
@@ -17,7 +18,9 @@ def create_customer(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    customer = customer_service.create(db, obj_in=customer_in)
+    customer = customer_service.create(
+        db, handle_result(current_user), obj_in=customer_in
+    )
     return handle_result(customer)
 
 
@@ -28,7 +31,9 @@ def get_all_customers(
     skip: int = 0,
     limit: int = 10,
 ):
-    customers = customer_service.get_many(db, skip=skip, limit=limit)
+    customers = customer_service.get_many(
+        db, handle_result(current_user), skip=skip, limit=limit
+    )
     return handle_result(customers)
 
 
@@ -38,7 +43,9 @@ def get_customer_by_id(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    customer = customer_service.get_one_by_id(db, id=customer_id)
+    customer = customer_service.get_one_by_id(
+        db, handle_result(current_user), id=customer_id
+    )
     return handle_result(customer)
 
 
@@ -49,5 +56,7 @@ def update_customer_by_id(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    customer = customer_service.update_by_id(db, id=customer_id, obj_in=customer_update)
+    customer = customer_service.update_by_id(
+        db, handle_result(current_user), id=customer_id, obj_in=customer_update
+    )
     return handle_result(customer)

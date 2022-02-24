@@ -2,7 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from api.deps import get_current_active_user, get_db
+from api.deps import get_current_active_user
+from db.config import get_db
 from schemas import (
     PurchaseOrderOut,
     PurchaseOrderLineCreate,
@@ -24,6 +25,7 @@ def create_new_purchase_order(
 ):
     purchase_order = purchase_order_service.create_along_with_purchase_lines(
         db,
+        handle_result(current_user),
         obj_in_for_purchase_order=purchase_order_in,
         obj_in_for_purchase_order_lines=purchase_order_line_in,
     )
@@ -37,7 +39,9 @@ def get_all_purchase_orders(
     skip: int = 0,
     limit: int = 10,
 ):
-    purchase_orders = purchase_order_service.get_many(db, skip=skip, limit=limit)
+    purchase_orders = purchase_order_service.get_many(
+        db, handle_result(current_user), skip=skip, limit=limit
+    )
     return handle_result(purchase_orders)
 
 

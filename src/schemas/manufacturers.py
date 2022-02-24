@@ -46,8 +46,6 @@ class ManufacturerCreate(BaseModel):
 
 class ManufacturerOut(ManufacturerCreate):
     id: int
-    trade: Optional[TradeOut] = None
-    trade_histories: Optional[List[TradeHistoryOut]] = None
 
     class Config:
         orm_mode = True
