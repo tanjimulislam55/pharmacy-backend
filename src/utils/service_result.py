@@ -1,5 +1,8 @@
 from .app_exceptions import AppExceptionCase
 
+# referenced blog
+"""https://camillovisini.com/article/abstracting-fastapi-services/?fbclid=IwAR355lkTqUo71TvfsPp8rNamBndAZjmuoiO-aRkO-cA_Wy8GCK6m_0GmQ14"""  # noqa E501
+
 
 class ServiceResult:
     def __init__(self, arg, **kwargs):

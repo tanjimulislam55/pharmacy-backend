@@ -2,6 +2,9 @@ from typing import Any, Dict, Union
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
 
+# referenced blog
+"""https://camillovisini.com/article/abstracting-fastapi-services/?fbclid=IwAR355lkTqUo71TvfsPp8rNamBndAZjmuoiO-aRkO-cA_Wy8GCK6m_0GmQ14"""  # noqa E501
+
 
 def generic_exception_handler(request: Request, exception: Exception):
     print(exception)
