@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy.orm import Session
 
 from .base import BaseDAL
@@ -12,6 +12,11 @@ class UserDAL(BaseDAL[User, UserCreate, UserUpdate]):
         db.add(db_obj)
         db.flush()
         return db_obj
+
+    def read_many_offset_limit(
+        self, db: Session, skip: int = 0, limit: int = 100
+    ) -> List[User]:
+        return db.query(self.model).offset(skip).limit(limit).all()
 
     def read_one_filtered_by_id(self, db: Session, id: int) -> Optional[User]:
         return db.query(self.model).filter(self.model.id == id).first()

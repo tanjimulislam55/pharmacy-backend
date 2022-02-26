@@ -46,6 +46,24 @@ class UserService(BaseService[UserDAL, UserCreate, UserUpdate]):
                 db, obj_in=UserInDB(**db_obj)
             )  # after modify had to unwrap as dal works with object-type BaseModel
 
+    def get_many(self, db: Session, current_user: User, skip: int = 0, limit: int = 10):
+        """checking superuser"""
+        role = role_service.get_one_by_id(db, id=current_user.role_id)
+        if (handle_result(role).name) != "superuser":
+            return ServiceResult(
+                AppException.CredentialsException("Not permittable for pharmacy user")
+            )
+        data = self.dal(self.model).read_many_offset_limit(
+            db,
+            skip=skip,
+            limit=limit,
+        )
+        if not data:
+            return ServiceResult(
+                AppException.NotFound(f"No {self.model.__name__.lower()}s found")
+            )
+        return ServiceResult(data, status_code=status.HTTP_200_OK)
+
     def get_one_by_email(self, db: Session, email):
         data = self.dal(self.model).read_one_filtered_by_email(db, email)
         if not data:

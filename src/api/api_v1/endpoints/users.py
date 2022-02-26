@@ -29,7 +29,9 @@ def get_all_users(
     skip: int = 0,
     limit: int = 10,
 ):
-    users = user_service.get_many(db, skip=skip, limit=limit)
+    users = user_service.get_many(
+        db, handle_result(current_user), skip=skip, limit=limit
+    )
     return handle_result(users)
 
 
