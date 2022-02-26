@@ -49,12 +49,12 @@ class BaseService(Generic[ModelDAL, CreateSchemaType, UpdateSchemaType]):
             skip=skip,
             limit=limit,
         )
-        if not data:
-            # return ServiceResult(
-            #     AppException.NotFound(f"No {self.model.__name__.lower()}s found")
-            # )
-            return ServiceResult(data, status_code=status.HTTP_404_NOT_FOUND)
-        return ServiceResult(data, status_code=status.HTTP_200_OK)
+        # if not data:
+        # return ServiceResult(
+        #     AppException.NotFound(f"No {self.model.__name__.lower()}s found")
+        # )
+        # return ServiceResult(data, status_code=status.HTTP_200_OK)
+        return ServiceResult(data, status_code=status.HTTP_404_NOT_FOUND)
 
     def get_many_filtered_by_datetime(
         self,
