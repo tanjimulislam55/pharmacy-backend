@@ -10,6 +10,12 @@ from utils.service_result import ServiceResult
 
 
 class RoleService(BaseService[RoleDAL, RoleCreate, RoleUpdate]):
+    def create(self, db: Session, obj_in: RoleCreate):
+        data = self.dal(self.model).create_with_commit(db, obj_in)
+        if not data:
+            return ServiceResult(AppException.ServerError("Something went wrong"))
+        return ServiceResult(data, status_code=status.HTTP_201_CREATED)
+
     def get_one_by_id(self, db: Session, id: int):
         data = self.dal(self.model).read_one_filtered_by_id(db, id)
         if not data:
