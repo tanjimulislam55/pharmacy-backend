@@ -7,6 +7,13 @@ from schemas import UserCreate, UserUpdate
 
 
 class UserDAL(BaseDAL[User, UserCreate, UserUpdate]):
+    def create_with_commit(self, db: Session, obj_in: UserCreate) -> User:
+        db_obj = self.model(**obj_in.dict())
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
     def create_without_commit_but_flush(self, db: Session, obj_in: UserCreate) -> User:
         db_obj = self.model(**obj_in.dict())
         db.add(db_obj)

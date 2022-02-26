@@ -42,9 +42,12 @@ class UserService(BaseService[UserDAL, UserCreate, UserUpdate]):
                     status_code=status.HTTP_201_CREATED,
                 )
         else:
-            return super().create(
+            # return super().create(
+            #     db, obj_in=UserInDB(**db_obj)
+            # )  # after modify had to unwrap as dal works with object-type BaseModel
+            return self.dal(self.model).create_with_commit(
                 db, obj_in=UserInDB(**db_obj)
-            )  # after modify had to unwrap as dal works with object-type BaseModel
+            )
 
     def get_many(self, db: Session, current_user: User, skip: int = 0, limit: int = 10):
         """checking superuser"""
