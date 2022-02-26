@@ -7,6 +7,12 @@ from schemas import UserCreate, UserUpdate
 
 
 class UserDAL(BaseDAL[User, UserCreate, UserUpdate]):
+    def create_without_commit_but_flush(self, db: Session, obj_in: UserCreate) -> User:
+        db_obj = self.model(**obj_in.dict())
+        db.add(db_obj)
+        db.flush()
+        return db_obj
+
     def read_one_filtered_by_id(self, db: Session, id: int) -> Optional[User]:
         return db.query(self.model).filter(self.model.id == id).first()
 
