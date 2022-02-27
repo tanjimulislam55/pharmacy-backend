@@ -4,6 +4,7 @@ from datetime import datetime
 
 
 class InvoiceOrderLineCreate(BaseModel):
+    mrp: float
     quantity: int
     unit_price: float
     discount: Optional[int]
@@ -20,6 +21,8 @@ class InvoiceOrderLineOut(InvoiceOrderLineCreate):
 
 
 class InvoiceOrderCreate(BaseModel):
+    sub_total: float
+    total_mrp: float
     total_amount: float
     paid_amount: float
     due_amount: float

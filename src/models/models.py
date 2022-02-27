@@ -147,6 +147,8 @@ class Stock(BaseModel):
 class InvoiceOrder(BaseModel):
     __tablename__ = "invoice_orders"
 
+    sub_total = Column(Float, nullable=False)
+    total_mrp = Column(Float, nullable=False)
     total_amount = Column(Float, nullable=False)
     paid_amount = Column(Float, nullable=False)
     due_amount = Column(Float, nullable=False)
@@ -167,6 +169,7 @@ class InvoiceOrderLine(BaseModel):
     __tablename__ = "invoice_order_lines"
 
     quantity = Column(Integer, nullable=False)
+    mrp = Column(Float, nullable=False)
     unit_price = Column(Float, nullable=False)
     discount = Column(Integer, nullable=True, default=0)
     cost = Column(Float, nullable=False)

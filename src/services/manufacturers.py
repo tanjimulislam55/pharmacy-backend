@@ -50,6 +50,21 @@ class ManufacturerService(
             )
         return ServiceResult(data, status_code=status.HTTP_200_OK)
 
+    def get_many_join_with_trades(
+        self, db: Session, current_user: User, skip: int = 0, limit: int = 10
+    ):
+        data = self.dal(self.model).read_many_join_with_trades(
+            db,
+            pharmacy_id=current_user.pharmacy.id,
+            skip=skip,
+            limit=limit,
+        )
+        if not data:
+            return ServiceResult(
+                AppException.NotFound(f"No {self.model.__name__.lower()}s found")
+            )
+        return ServiceResult(data, status_code=status.HTTP_200_OK)
+
     def get_one_by_id(self, db: Session, id: int):
         data = self.dal(self.model).read_one_filtered_by_id(db, id)
         if not data:

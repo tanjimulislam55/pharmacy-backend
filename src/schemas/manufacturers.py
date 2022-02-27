@@ -60,3 +60,10 @@ class ManufacturerUpdate(BaseModel):
     established_in: Optional[str]
     market_share: Optional[str]
     growth: Optional[str]
+
+
+class ManufacturerOutJoinWithTrade(ManufacturerCreate, TradeCreate):
+    id: int
+
+    class Config:
+        orm_mode = True

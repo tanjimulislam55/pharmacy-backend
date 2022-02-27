@@ -33,6 +33,24 @@ class ManufacturerDAL(BaseDAL[Manufacturer, ManufacturerCreate, ManufacturerUpda
     ) -> List[Manufacturer]:
         return db.query(self.model).offset(skip).limit(limit).all()
 
+    def read_many_join_with_trades(
+        self, db: Session, pharmacy_id: int, skip: int = 0, limit: int = 10
+    ) -> List[Manufacturer]:
+        return (
+            db.query(
+                Manufacturer.id,
+                Manufacturer.name,
+                Trade.closing_balance,
+                Trade.outstanding_amount,
+                Trade.overdue_amount,
+            )
+            .filter(Trade.pharmacy_id == pharmacy_id)
+            .join(Trade)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
     def read_one_filtered_by_id(self, db: Session, id: int) -> Optional[Manufacturer]:
         return db.query(self.model).filter(self.model.id == id).first()
 
