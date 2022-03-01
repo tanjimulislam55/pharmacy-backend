@@ -77,21 +77,25 @@ class InvoiceOrderService(
         sum_t: float = 0
         sum_d: float = 0
         sum_p: float = 0
+        sum_td: float = 0
         if not data:
             sum: dict = {
-                "sum_of_total_amount": sum_t,
+                "sum_of_total_mrp": sum_t,
                 "sum_of_due_amount": sum_d,
                 "sum_of_paid_amount": sum_p,
+                "sum_of_total_discount": sum_td,
             }
             return ServiceResult(sum, status_code=status.HTTP_204_NO_CONTENT)
         for item in data:
-            sum_t += item.total_amount
+            sum_t += item.total_mrp
             sum_d += item.due_amount
             sum_p += item.paid_amount
+            sum_td += item.total_mrp - item.total_amount
         sum: dict = {
-            "sum_of_total_amount": sum_t,
+            "sum_of_total_mrp": sum_t,
             "sum_of_due_amount": sum_d,
             "sum_of_paid_amount": sum_p,
+            "sum_of_total_discount": sum_td,
         }
         return ServiceResult(sum, status_code=status.HTTP_200_OK)
 
