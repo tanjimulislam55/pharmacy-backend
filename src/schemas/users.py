@@ -29,6 +29,7 @@ class UserUpdate(BaseModel):
 
 class UserOut(UserBase):
     id: int
+    is_active: bool
     pharmacy: Optional[PharmacyOut] = None
 
     class Config:
