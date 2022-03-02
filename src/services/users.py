@@ -124,5 +124,19 @@ class UserService(BaseService[UserDAL, UserCreate, UserUpdate]):
             return ServiceResult(AppException.NotAccepted())
         return ServiceResult(user, status_code=status.HTTP_202_ACCEPTED)
 
+    def update_user_role(self, db: Session, current_user: User, id: int, role_id: int):
+        """checking superuser"""
+        role = role_service.get_one_by_id(db, id=current_user.role_id)
+        if (handle_result(role).name) != "superuser":
+            return ServiceResult(
+                AppException.CredentialsException("Not permittable for pharmacy user")
+            )
+        user = self.dal(self.model).update_one_filtered_by_id_to_update_role(
+            db, id, role_id
+        )
+        if not user:
+            return ServiceResult(AppException.NotAccepted())
+        return ServiceResult(user, status_code=status.HTTP_202_ACCEPTED)
+
 
 user_service = UserService(UserDAL, User)

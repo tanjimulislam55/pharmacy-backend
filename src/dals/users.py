@@ -40,3 +40,12 @@ class UserDAL(BaseDAL[User, UserCreate, UserUpdate]):
         )
         db.commit()
         return self.read_one_filtered_by_id(db, id)
+
+    def update_one_filtered_by_id_to_update_role(
+        self, db: Session, id: int, role_id: int
+    ) -> User:
+        db.query(self.model).filter(self.model.id == id).update(
+            {self.model.role_id: role_id}, synchronize_session=False
+        )
+        db.commit()
+        return self.read_one_filtered_by_id(db, id)

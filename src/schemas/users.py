@@ -3,6 +3,7 @@ from pydantic.types import constr
 from typing import Optional
 
 from .pharmacies import PharmacyOut
+from .roles import Role
 
 
 class UserBase(BaseModel):
@@ -31,6 +32,7 @@ class UserOut(UserBase):
     id: int
     is_active: bool
     pharmacy: Optional[PharmacyOut] = None
+    role: Optional[Role] = None
 
     class Config:
         orm_mode = True

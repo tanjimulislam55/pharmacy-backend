@@ -60,3 +60,16 @@ def active_a_user(
 ):
     user = user_service.activate_user(db, handle_result(current_user), id=user_id)
     return handle_result(user)
+
+
+@router.put("/update/{user_id}/role/{role_id}", response_model=UserOut)
+def update_user_role(
+    user_id: int,
+    role_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    user = user_service.update_user_role(
+        db, handle_result(current_user), id=user_id, role_id=role_id
+    )
+    return handle_result(user)
