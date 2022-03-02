@@ -138,5 +138,20 @@ class UserService(BaseService[UserDAL, UserCreate, UserUpdate]):
             return ServiceResult(AppException.NotAccepted())
         return ServiceResult(user, status_code=status.HTTP_202_ACCEPTED)
 
+    def remove_by_id(self, db: Session, current_user: User, id: int):
+        """checking superuser"""
+        role = role_service.get_one_by_id(db, id=current_user.role_id)
+        if (handle_result(role).name) != "superuser":
+            return ServiceResult(
+                AppException.CredentialsException("Not permittable for pharmacy user")
+            )
+        return (
+            ServiceResult("Deleted", status_code=status.HTTP_202_ACCEPTED)
+            if self.dal(self.model).delete_one_filtered_by_id(db, id)
+            else ServiceResult(
+                AppException.Forbidden("Couldn't process delete request")
+            )
+        )
+
 
 user_service = UserService(UserDAL, User)

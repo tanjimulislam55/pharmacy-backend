@@ -73,3 +73,13 @@ def update_user_role(
         db, handle_result(current_user), id=user_id, role_id=role_id
     )
     return handle_result(user)
+
+
+@router.delete("/delete/{user_id}")
+def delete_a_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    user = user_service.remove_by_id(db, handle_result(current_user), id=user_id)
+    return handle_result(user)

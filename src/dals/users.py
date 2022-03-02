@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union, Any
 from sqlalchemy.orm import Session
 
 from .base import BaseDAL
@@ -49,3 +49,16 @@ class UserDAL(BaseDAL[User, UserCreate, UserUpdate]):
         )
         db.commit()
         return self.read_one_filtered_by_id(db, id)
+
+    def delete_one_filtered_by_id(
+        self, db: Session, id: int
+    ) -> Optional[Union[User, Any]]:
+        if (
+            db.query(self.model)
+            .filter(self.model.id == id)
+            .delete(synchronize_session=False)
+        ):
+            db.commit()
+            return True
+        else:
+            return False

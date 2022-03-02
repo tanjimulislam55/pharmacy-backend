@@ -90,10 +90,10 @@ class BaseService(Generic[ModelDAL, CreateSchemaType, UpdateSchemaType]):
         return ServiceResult(data, status_code=status.HTTP_202_ACCEPTED)
 
     def remove_by_id(self, db: Session, current_user: User, id: int):
-        ServiceResult("Deleted", status_code=status.HTTP_202_ACCEPTED) if self.dal(
-            self.model
-        ).delete_one_filtered_by_id(
-            db, id, pharmacy_id=current_user.pharmacy.id
-        ) else ServiceResult(
-            AppException.Forbidden()
+        return (
+            ServiceResult("Deleted", status_code=status.HTTP_202_ACCEPTED)
+            if self.dal(self.model).delete_one_filtered_by_id(
+                db, id, pharmacy_id=current_user.pharmacy.id
+            )
+            else ServiceResult(AppException.Forbidden())
         )

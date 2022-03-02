@@ -94,7 +94,12 @@ class BaseDAL(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def delete_one_filtered_by_id(
         self, db: Session, id: int, pharmacy_id: int
     ) -> Optional[Union[ModelType, Any]]:
-        db.query(self.model).filter(
-            self.model.id == id, self.model.pharmacy_id == pharmacy_id
-        ).delete(synchronize_session=False)
-        db.commit()
+        if (
+            db.query(self.model)
+            .filter(self.model.id == id, self.model.pharmacy_id == pharmacy_id)
+            .delete(synchronize_session=False)
+        ):
+            db.commit()
+            return True
+        else:
+            return False
